@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="sidebar_background">#FAFAFF</color>
+    <color name="sidebar_item_active_bg">#F0E8FF</color>
+    <color name="sidebar_item_active_content">#4A2E83</color>
+    <color name="sidebar_item_inactive_content">#4A5568</color>
+    <color name="sidebar_close_icon">#4A2E83</color>
 </resources>
