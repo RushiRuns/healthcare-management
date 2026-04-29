@@ -19,10 +19,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.btnLogin.setOnClickListener(v -> {
-            String username = binding.etUsername.getText().toString();
+            String email = binding.etEmail.getText().toString();
             String password = binding.etPassword.getText().toString();
 
-            if (username.equals("admin") && password.equals("admin123")) {
+            if (email.equals("admin") && password.equals("admin123")) {
                 Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
                 startActivity(intent);
                 finish();
