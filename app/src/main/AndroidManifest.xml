@@ -35,6 +35,11 @@
             android:exported="false"
             android:theme="@style/Theme.Healthcare_app" />
 
+        <activity
+            android:name=".PatientDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Healthcare_app"/>
+
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package com.rushi.healthcare_app;
 
 import android.os.Bundle;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -59,7 +60,8 @@ public class AppointmentsActivity extends AppCompatActivity {
 
         btnOpenFullRecord.setOnClickListener(v -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            Toast.makeText(this, "Navigating to Full Record...", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AppointmentsActivity.this, PatientDetailActivity.class);
+            startActivity(intent);
         });
 
         getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
