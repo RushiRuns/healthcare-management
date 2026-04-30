@@ -95,9 +95,9 @@ public class AppointmentsActivity extends AppCompatActivity {
 
     private void setupDummyData() {
         dummyPatients = new HashMap<>();
-        dummyPatients.put("p1", new Patient("p1", "Sarah Connor", "Penicillin", "Hypertension"));
-        dummyPatients.put("p2", new Patient("p2", "John Wick", "None", "Lacerations, Fatigue"));
-        dummyPatients.put("p3", new Patient("p3", "Bruce Wayne", "Dust", "Insomnia, Multiple Fractures"));
+        dummyPatients.put("p1", new Patient("p1", "Sarah Connor", "Penicillin", "Hypertension", "PT-2001", "30 yrs"));
+        dummyPatients.put("p2", new Patient("p2", "John Wick", "None", "Lacerations, Fatigue", "PT-2002", "42 yrs"));
+        dummyPatients.put("p3", new Patient("p3", "Bruce Wayne", "Dust", "Insomnia, Multiple Fractures", "PT-2003", "38 yrs"));
 
         dummyAppointments = new ArrayList<>();
         dummyAppointments.add(new Appointment("a1", "p1", "Sarah Connor", "09:00 AM", "Done"));

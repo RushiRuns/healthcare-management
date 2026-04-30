@@ -40,6 +40,8 @@
             android:exported="false"
             android:theme="@style/Theme.Healthcare_app"/>
 
+        <activity android:name=".PatientsActivity" />
+
     </application>
 
 </manifest>

@@ -43,6 +43,9 @@ public class DashboardActivity extends AppCompatActivity {
             if (id == R.id.nav_appointments) {
                 Intent intent = new Intent(DashboardActivity.this, AppointmentsActivity.class);
                 startActivity(intent);
+            } else if (id == R.id.nav_patients) {
+                Intent intent = new Intent(DashboardActivity.this, PatientsActivity.class);
+                startActivity(intent);
             }
 
             binding.drawerLayout.closeDrawer(GravityCompat.START);
