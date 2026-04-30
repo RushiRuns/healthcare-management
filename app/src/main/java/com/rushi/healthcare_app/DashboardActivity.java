@@ -29,10 +29,8 @@ public class DashboardActivity extends AppCompatActivity {
         binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Default item checked
         binding.navigationView.setCheckedItem(R.id.nav_dashboard);
 
-        // Sign Out Button setup
         binding.btnSignOut.setOnClickListener(v -> {
             Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -40,6 +38,13 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         binding.navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_appointments) {
+                Intent intent = new Intent(DashboardActivity.this, AppointmentsActivity.class);
+                startActivity(intent);
+            }
+
             binding.drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
