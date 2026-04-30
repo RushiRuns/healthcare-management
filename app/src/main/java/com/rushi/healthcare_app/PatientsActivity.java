@@ -5,13 +5,23 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PatientsActivity extends AppCompatActivity {
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
+    private NavigationView navigationView;
 
     private RecyclerView recyclerPatients;
     private PatientsAdapter adapter;
@@ -23,6 +33,44 @@ public class PatientsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patients);
 
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+        MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
+
+        setSupportActionBar(topAppBar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, topAppBar, 0, 0);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView.setCheckedItem(R.id.nav_patients);
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_dashboard) {
+                Intent intent = new Intent(PatientsActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                finish();
+            } else if (id == R.id.nav_appointments) {
+                Intent intent = new Intent(PatientsActivity.this, AppointmentsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+
+        LinearLayout btnSignOut = findViewById(R.id.btnSignOut);
+        btnSignOut.setOnClickListener(v -> {
+            Intent intent = new Intent(PatientsActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+
         recyclerPatients = findViewById(R.id.recyclerPatients);
         editSearch = findViewById(R.id.editSearch);
 
@@ -30,7 +78,6 @@ public class PatientsActivity extends AppCompatActivity {
 
         adapter = new PatientsAdapter(dummyPatients, patient -> {
             Intent intent = new Intent(PatientsActivity.this, PatientDetailActivity.class);
-            // You can pass patient details here using intent.putExtra if needed
             startActivity(intent);
         });
 
@@ -48,6 +95,18 @@ public class PatientsActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
         });
     }
 
