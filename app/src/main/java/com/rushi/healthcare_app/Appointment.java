@@ -1,10 +1,20 @@
 package com.rushi.healthcare_app;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Appointment {
+    @SerializedName("appointment_id")
     private String id;
+
+    @SerializedName("patient_id")
     private String patientId;
+
+    @SerializedName("patient_name")
     private String patientName;
-    private String time;
+
+    @SerializedName("appointment_date")
+    private String time; // This maps to the date/time string from DB
+
     private String status;
 
     public Appointment(String id, String patientId, String patientName, String time, String status) {

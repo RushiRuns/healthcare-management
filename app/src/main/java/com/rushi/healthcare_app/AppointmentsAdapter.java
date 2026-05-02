@@ -35,21 +35,38 @@ public class AppointmentsAdapter extends RecyclerView.Adapter<AppointmentsAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Appointment appt = appointmentList.get(position);
-        holder.textTime.setText(appt.getTime());
+
+        String timeDisplay = appt.getTime();
+        if (timeDisplay != null && timeDisplay.length() > 10) {
+            timeDisplay = timeDisplay.substring(11, 16);
+        }
+        holder.textTime.setText(timeDisplay);
+
         holder.textPatientName.setText(appt.getPatientName());
-        holder.chipStatus.setText(appt.getStatus());
+
+        String status = appt.getStatus();
+        if (status == null || status.trim().isEmpty()) {
+            status = "scheduled";
+        }
+
+        String displayStatus = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
+        holder.chipStatus.setText(displayStatus);
 
         int bgColor = R.color.status_wait_bg;
         int textColor = R.color.status_wait_text;
 
-        switch (appt.getStatus()) {
-            case "Done":
+        switch (status.toLowerCase()) {
+            case "completed":
                 bgColor = R.color.status_done_bg;
                 textColor = R.color.status_done_text;
                 break;
-            case "Cancel":
+            case "cancelled":
                 bgColor = R.color.status_cancel_bg;
                 textColor = R.color.status_cancel_text;
+                break;
+            default:
+                bgColor = R.color.status_wait_bg;
+                textColor = R.color.status_wait_text;
                 break;
         }
 
@@ -61,7 +78,7 @@ public class AppointmentsAdapter extends RecyclerView.Adapter<AppointmentsAdapte
 
     @Override
     public int getItemCount() {
-        return appointmentList.size();
+        return appointmentList == null ? 0 : appointmentList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

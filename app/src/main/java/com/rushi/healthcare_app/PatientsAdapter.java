@@ -36,7 +36,7 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
     public void onBindViewHolder(@NonNull PatientViewHolder holder, int position) {
         Patient patient = patientListFiltered.get(position);
         holder.textPatientName.setText(patient.getName());
-        holder.textPatientDetails.setText(patient.getMedicalId() + " • " + patient.getAge());
+        holder.textPatientDetails.setText(patient.getMedicalId() + " • " + patient.getDob());
 
         if (patient.getName() != null && !patient.getName().isEmpty()) {
             holder.textAvatar.setText(String.valueOf(patient.getName().charAt(0)).toUpperCase());

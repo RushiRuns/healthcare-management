@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -16,6 +18,11 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PatientsActivity extends AppCompatActivity {
 
@@ -26,7 +33,6 @@ public class PatientsActivity extends AppCompatActivity {
     private RecyclerView recyclerPatients;
     private PatientsAdapter adapter;
     private EditText editSearch;
-    private List<Patient> dummyPatients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +78,16 @@ public class PatientsActivity extends AppCompatActivity {
         });
 
         recyclerPatients = findViewById(R.id.recyclerPatients);
+        recyclerPatients.setLayoutManager(new LinearLayoutManager(this));
         editSearch = findViewById(R.id.editSearch);
 
-        setupDummyData();
-
-        adapter = new PatientsAdapter(dummyPatients, patient -> {
-            Intent intent = new Intent(PatientsActivity.this, PatientDetailActivity.class);
+        com.google.android.material.floatingactionbutton.FloatingActionButton fabAddPatient = findViewById(R.id.fabAddPatient);
+        fabAddPatient.setOnClickListener(v -> {
+            Intent intent = new Intent(PatientsActivity.this, AddPatientActivity.class);
             startActivity(intent);
         });
 
-        recyclerPatients.setLayoutManager(new LinearLayoutManager(this));
-        recyclerPatients.setAdapter(adapter);
+        fetchPatients();
 
         editSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -90,7 +95,9 @@ public class PatientsActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
+                if (adapter != null) {
+                    adapter.filter(s.toString());
+                }
             }
 
             @Override
@@ -110,11 +117,33 @@ public class PatientsActivity extends AppCompatActivity {
         });
     }
 
-    private void setupDummyData() {
-        dummyPatients = new ArrayList<>();
-        dummyPatients.add(new Patient("1", "Rahul Sharma", "Penicillin", "Hypertension", "PT-1001", "45 yrs"));
-        dummyPatients.add(new Patient("2", "Priya Desai", "None", "Asthma", "PT-1002", "32 yrs"));
-        dummyPatients.add(new Patient("3", "Amit Patel", "Peanuts", "Diabetes Type 2", "PT-1003", "50 yrs"));
-        dummyPatients.add(new Patient("4", "Sneha Kapoor", "Sulfa Drugs", "None", "PT-1004", "28 yrs"));
+    private void fetchPatients() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.1.16/healthcare-backend/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        apiService.getPatients().enqueue(new Callback<PatientsListResponse>() {
+            @Override
+            public void onResponse(Call<PatientsListResponse> call, Response<PatientsListResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    List<Patient> patients = response.body().getData();
+                    adapter = new PatientsAdapter(patients, patient -> {
+                        Intent intent = new Intent(PatientsActivity.this, PatientDetailActivity.class);
+                        intent.putExtra("PATIENT_ID", patient.getId());
+                        startActivity(intent);
+                    });
+                    recyclerPatients.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PatientsListResponse> call, Throwable t) {
+                Log.e("API_ERROR", t.getMessage());
+                Toast.makeText(PatientsActivity.this, "Failed to load patients", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

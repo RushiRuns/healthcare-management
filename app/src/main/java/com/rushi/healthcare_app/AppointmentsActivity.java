@@ -2,8 +2,10 @@ package com.rushi.healthcare_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -14,10 +16,12 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AppointmentsActivity extends AppCompatActivity {
 
@@ -33,9 +37,6 @@ public class AppointmentsActivity extends AppCompatActivity {
     private TextView sheetAllergies;
     private TextView sheetConditions;
     private MaterialButton btnOpenFullRecord;
-
-    private List<Appointment> dummyAppointments;
-    private Map<String, Patient> dummyPatients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,16 +93,15 @@ public class AppointmentsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewAppointments);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        setupDummyData();
 
-        adapter = new AppointmentsAdapter(dummyAppointments, appointment -> {
-            showPatientDetails(appointment);
-        });
-        recyclerView.setAdapter(adapter);
+        // Trigger dynamic data fetch
+        fetchAppointments();
 
         btnOpenFullRecord.setOnClickListener(v -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Intent intent = new Intent(AppointmentsActivity.this, PatientDetailActivity.class);
+            // Pass the patient name or ID to the detail activity
+            intent.putExtra("PATIENT_NAME", sheetPatientName.getText().toString());
             startActivity(intent);
         });
 
@@ -120,32 +120,67 @@ public class AppointmentsActivity extends AppCompatActivity {
         });
     }
 
-    private void showPatientDetails(Appointment appointment) {
-        Patient patient = dummyPatients.get(appointment.getPatientId());
+    private void fetchAppointments() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.1.16/healthcare-backend/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-        if (patient != null) {
-            sheetPatientName.setText(patient.getName());
-            sheetAllergies.setText(patient.getAllergies());
-            sheetConditions.setText(patient.getConditions());
-        } else {
-            sheetPatientName.setText(appointment.getPatientName());
-            sheetAllergies.setText("No data");
-            sheetConditions.setText("No data");
-        }
+        ApiService apiService = retrofit.create(ApiService.class);
 
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        apiService.getAppointments().enqueue(new Callback<AppointmentResponse>() {
+            @Override
+            public void onResponse(Call<AppointmentResponse> call, Response<AppointmentResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Appointment> appointmentList = response.body().getData();
+                    adapter = new AppointmentsAdapter(appointmentList, appointment -> {
+                        showPatientDetails(appointment);
+                    });
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Toast.makeText(AppointmentsActivity.this, "Server error", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AppointmentResponse> call, Throwable t) {
+                Log.e("API_ERROR", "Error: " + t.getMessage());
+                Toast.makeText(AppointmentsActivity.this, "Check your connection", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void setupDummyData() {
-        dummyPatients = new HashMap<>();
-        dummyPatients.put("p1", new Patient("p1", "Sarah Connor", "Penicillin", "Hypertension", "PT-2001", "30 yrs"));
-        dummyPatients.put("p2", new Patient("p2", "John Wick", "None", "Lacerations, Fatigue", "PT-2002", "42 yrs"));
-        dummyPatients.put("p3", new Patient("p3", "Bruce Wayne", "Dust", "Insomnia, Multiple Fractures", "PT-2003", "38 yrs"));
+    private void showPatientDetails(Appointment appointment) {
+        // Show temporary loading state
+        sheetPatientName.setText(appointment.getPatientName());
+        sheetAllergies.setText("Loading...");
+        sheetConditions.setText("Loading...");
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        dummyAppointments = new ArrayList<>();
-        dummyAppointments.add(new Appointment("a1", "p1", "Sarah Connor", "09:00 AM", "Done"));
-        dummyAppointments.add(new Appointment("a2", "p2", "John Wick", "10:30 AM", "Wait"));
-        dummyAppointments.add(new Appointment("a3", "p3", "Bruce Wayne", "01:00 PM", "Cancel"));
-        dummyAppointments.add(new Appointment("a4", "p1", "Sarah Connor", "03:00 PM", "Wait"));
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.1.16/healthcare-backend/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        apiService.getPatientDetails(appointment.getPatientId()).enqueue(new Callback<PatientResponse>() {
+            @Override
+            public void onResponse(Call<PatientResponse> call, Response<PatientResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Patient patient = response.body().getData();
+                    sheetPatientName.setText(patient.getName());
+                    sheetAllergies.setText(patient.getAllergiesSummary());
+                    sheetConditions.setText(patient.getConditionsSummary());
+                } else {
+                    sheetAllergies.setText("Error fetching data");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PatientResponse> call, Throwable t) {
+                sheetAllergies.setText("Connection failed");
+            }
+        });
     }
 }
