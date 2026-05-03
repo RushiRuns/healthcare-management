@@ -130,6 +130,10 @@ public class PatientsActivity extends AppCompatActivity {
                         startActivity(intent);
                     });
                     recyclerPatients.setAdapter(adapter);
+                } else {
+                    String error = "Failed to load patients";
+                    if (response.code() != 200) error += " (Error: " + response.code() + ")";
+                    Toast.makeText(PatientsActivity.this, error, Toast.LENGTH_SHORT).show();
                 }
             }
 

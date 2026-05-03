@@ -140,7 +140,13 @@ public class AppointmentsActivity extends AppCompatActivity {
                     });
                     recyclerView.setAdapter(adapter);
                 } else {
-                    Toast.makeText(AppointmentsActivity.this, "Server error", Toast.LENGTH_SHORT).show();
+                    String errorMsg = "Server error";
+                    if (response.errorBody() != null) {
+                        try {
+                            errorMsg += ": " + response.code();
+                        } catch (Exception e) {}
+                    }
+                    Toast.makeText(AppointmentsActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                 }
             }
 
