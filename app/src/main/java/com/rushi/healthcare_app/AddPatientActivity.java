@@ -16,7 +16,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import android.app.DatePickerDialog;
 import java.util.Calendar;
@@ -42,6 +41,11 @@ public class AddPatientActivity extends AppCompatActivity {
         topAppBar.setNavigationOnClickListener(v -> finish());
 
         searchPatientAuto = findViewById(R.id.searchPatientAuto);
+        searchPatientAuto.setThreshold(1);
+        searchPatientAuto.setOnClickListener(v -> searchPatientAuto.showDropDown());
+        searchPatientAuto.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) searchPatientAuto.showDropDown();
+        });
         editFirstName = findViewById(R.id.editFirstName);
         editLastName = findViewById(R.id.editLastName);
         editDob = findViewById(R.id.editDob);
@@ -50,13 +54,9 @@ public class AddPatientActivity extends AppCompatActivity {
         editEmail = findViewById(R.id.editEmail);
         btnSavePatient = findViewById(R.id.btnSavePatient);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.16/healthcare-backend/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        apiService = retrofit.create(ApiService.class);
+        apiService = RetrofitClient.getApiService();
 
-        setupLiveSearch();
+        loadPatientsForDropdown();
 
         // --- NEW DATE PICKER LOGIC ---
         editDob.setOnClickListener(v -> {
@@ -73,54 +73,38 @@ public class AddPatientActivity extends AppCompatActivity {
         btnSavePatient.setOnClickListener(v -> savePatientData());
     }
 
-    private void setupLiveSearch() {
-        searchPatientAuto.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() >= 2) {
-                    performSearch(s.toString());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
-        searchPatientAuto.setOnItemClickListener((parent, view, position, id) -> {
-            Patient selected = searchResults.get(position);
-            autoFillForm(selected);
-        });
-    }
-
-    private void performSearch(String query) {
-        // We use your existing GET index.php?search=query
+    private void loadPatientsForDropdown() {
         apiService.getPatients().enqueue(new Callback<PatientsListResponse>() {
             @Override
             public void onResponse(Call<PatientsListResponse> call, Response<PatientsListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     searchResults = response.body().getData();
-
-                    // Filter locally based on the query for the dropdown
                     List<String> displayNames = new ArrayList<>();
+
                     for (Patient p : searchResults) {
-                        if (p.getName().toLowerCase().contains(query.toLowerCase())) {
-                            displayNames.add(p.getName() + " (" + p.getDob() + ")");
-                        }
+                        displayNames.add(p.getName() + " (" + p.getMedicalId() + ")");
                     }
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(AddPatientActivity.this,
                             android.R.layout.simple_dropdown_item_1line, displayNames);
                     searchPatientAuto.setAdapter(adapter);
-                    searchPatientAuto.showDropDown();
+
+                    searchPatientAuto.setOnItemClickListener((parent, view, position, id) -> {
+                        String selectedText = (String) parent.getItemAtPosition(position);
+                        for (Patient p : searchResults) {
+                            if ((p.getName() + " (" + p.getMedicalId() + ")").equals(selectedText)) {
+                                autoFillForm(p);
+                                searchPatientAuto.setText(p.getName());
+                                break;
+                            }
+                        }
+                    });
                 }
             }
 
             @Override
             public void onFailure(Call<PatientsListResponse> call, Throwable t) {
-                // Silently ignore search fails so as not to interrupt typing
+                // Silently fail, it just means autofill isn't available
             }
         });
     }
@@ -143,24 +127,29 @@ public class AddPatientActivity extends AppCompatActivity {
     private void savePatientData() {
         String fname = editFirstName.getText().toString().trim();
         String lname = editLastName.getText().toString().trim();
+        String dob = editDob.getText().toString().trim();
+        String phone = editPhone.getText().toString().trim();
+        String genderInput = editGender.getText().toString().trim();
 
-        if (fname.isEmpty() || lname.isEmpty()) {
-            Toast.makeText(this, "Name is required", Toast.LENGTH_SHORT).show();
+        if (fname.isEmpty() || lname.isEmpty() || dob.isEmpty() || phone.isEmpty()) {
+            Toast.makeText(this, "Name, DOB, and Phone are required", Toast.LENGTH_LONG).show();
             return;
         }
 
-        // --- NEW MEDICAL ID LOGIC ---
-        // Generates a random number between 000 and 999 (e.g., PT-007, PT-450)
-        String generatedMedicalId = String.format(Locale.getDefault(), "PT-%03d", new Random().nextInt(1000));
+        String gender = "Other";
+        if (genderInput.toLowerCase().startsWith("m")) gender = "M";
+        else if (genderInput.toLowerCase().startsWith("f")) gender = "F";
+
+        String generatedMedicalId = "PT-" + System.currentTimeMillis();
 
         HashMap<String, String> map = new HashMap<>();
         map.put("medical_id", generatedMedicalId);
         map.put("first_name", fname);
         map.put("last_name", lname);
-        map.put("date_of_birth", editDob.getText().toString());
-        map.put("gender", editGender.getText().toString());
-        map.put("phone", editPhone.getText().toString());
-        map.put("email", editEmail.getText().toString());
+        map.put("date_of_birth", dob);
+        map.put("gender", gender);
+        map.put("phone", phone);
+        map.put("email", editEmail.getText().toString().trim());
 
         apiService.createPatient(map).enqueue(new Callback<PatientResponse>() {
             @Override
@@ -169,7 +158,7 @@ public class AddPatientActivity extends AppCompatActivity {
                     Toast.makeText(AddPatientActivity.this, "Patient Saved as " + generatedMedicalId, Toast.LENGTH_LONG).show();
                     finish();
                 } else {
-                    Toast.makeText(AddPatientActivity.this, "Failed to save to database", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPatientActivity.this, "Failed to save (Ensure Phone is unique)", Toast.LENGTH_LONG).show();
                 }
             }
 

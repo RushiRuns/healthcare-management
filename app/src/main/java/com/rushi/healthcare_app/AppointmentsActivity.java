@@ -20,7 +20,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AppointmentsActivity extends AppCompatActivity {
@@ -52,7 +51,7 @@ public class AppointmentsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, topAppBar, 0, 0);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, topAppBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -93,6 +92,14 @@ public class AppointmentsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewAppointments);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        com.google.android.material.floatingactionbutton.FloatingActionButton fabAddAppointment = findViewById(R.id.fabAddAppointment);
+
+        // Set the click listener to open the new Activity
+        fabAddAppointment.setOnClickListener(v -> {
+            Intent intent = new Intent(AppointmentsActivity.this, AddAppointmentActivity.class);
+            startActivity(intent);
+        });
+
 
         // Trigger dynamic data fetch
         fetchAppointments();
@@ -121,12 +128,7 @@ public class AppointmentsActivity extends AppCompatActivity {
     }
 
     private void fetchAppointments() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.16/healthcare-backend/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiService apiService = retrofit.create(ApiService.class);
+        ApiService apiService = RetrofitClient.getApiService();
 
         apiService.getAppointments().enqueue(new Callback<AppointmentResponse>() {
             @Override
@@ -157,12 +159,7 @@ public class AppointmentsActivity extends AppCompatActivity {
         sheetConditions.setText("Loading...");
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.16/healthcare-backend/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiService apiService = retrofit.create(ApiService.class);
+        ApiService apiService = RetrofitClient.getApiService();
 
         apiService.getPatientDetails(appointment.getPatientId()).enqueue(new Callback<PatientResponse>() {
             @Override

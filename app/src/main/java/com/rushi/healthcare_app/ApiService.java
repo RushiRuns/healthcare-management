@@ -19,4 +19,7 @@ public interface ApiService {
 
     @POST("patients/index.php")
     Call<PatientResponse> createPatient(@Body HashMap<String, String> patientData);
+
+    @POST("appointments/index.php")
+    Call<AppointmentResponse> createAppointment(@Body HashMap<String, Object> appointmentData);
 }

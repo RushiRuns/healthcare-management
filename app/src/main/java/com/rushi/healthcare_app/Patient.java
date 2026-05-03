@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Patient {
     @SerializedName("patient_id")
-    private String id;
+    private int id;
 
     @SerializedName("medical_id")
     private String medicalId;
@@ -33,7 +33,7 @@ public class Patient {
     @SerializedName("medical_history")
     private List<MedicalHistory> medicalHistory;
 
-    public String getId() { return id; }
+    public String getId() { return String.valueOf(id); }
     public String getMedicalId() { return medicalId; }
     public String getName() { return firstName + " " + lastName; }
     public String getDob() { return dob; }

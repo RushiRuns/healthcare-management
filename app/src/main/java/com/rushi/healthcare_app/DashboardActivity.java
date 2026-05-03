@@ -25,7 +25,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         toggle = new ActionBarDrawerToggle(
                 this, binding.drawerLayout, binding.toolbar,
-                0, 0);
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 

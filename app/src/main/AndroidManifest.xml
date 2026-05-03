@@ -46,6 +46,8 @@
 
         <activity android:name=".AddPatientActivity"/>
 
+        <activity android:name=".AddAppointmentActivity"/>
+
     </application>
 
 </manifest>
