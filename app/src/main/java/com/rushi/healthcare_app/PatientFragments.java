@@ -30,6 +30,7 @@ public class PatientFragments {
         private String patientId;
         private RecyclerView recyclerView;
         private com.rushi.healthcare_app.adapters.HistoryAdapter adapter;
+        private com.google.android.material.floatingactionbutton.FloatingActionButton fabAddCondition;
 
         public static OverviewFragment newInstance(String patientId) {
             OverviewFragment fragment = new OverviewFragment();
@@ -56,10 +57,72 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            Log.d("PatientFrag", "OverviewFragment created with patientId: " + patientId);
             recyclerView = view.findViewById(R.id.recyclerViewHistory);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            fabAddCondition = view.findViewById(R.id.fabAddCondition);
+            fabAddCondition.setOnClickListener(v -> showAddConditionBottomSheet());
+
             fetchOverviewData();
+        }
+
+        private void showAddConditionBottomSheet() {
+            com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+
+            View bottomSheetView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.bottom_sheet_add_condition, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            android.widget.EditText inputName = bottomSheetView.findViewById(R.id.inputConditionName);
+            android.widget.EditText inputDate = bottomSheetView.findViewById(R.id.inputDiagnosisDate);
+            android.widget.RadioGroup radioGroup = bottomSheetView.findViewById(R.id.radioGroupStatus);
+            android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveCondition);
+
+            btnSave.setOnClickListener(v -> {
+                String conditionName = inputName.getText().toString().trim();
+                String diagnosisDate = inputDate.getText().toString().trim();
+
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                android.widget.RadioButton selectedRadio = bottomSheetView.findViewById(selectedId);
+                String status = selectedRadio.getText().toString();
+
+                if (conditionName.isEmpty()) {
+                    Toast.makeText(getContext(), "Please enter a condition name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                saveConditionToDatabase(conditionName, diagnosisDate, status, bottomSheetDialog);
+            });
+
+            bottomSheetDialog.show();
+        }
+
+        private void saveConditionToDatabase(String name, String date, String status, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("patient_id", patientId);
+            data.put("condition_name", name);
+            data.put("diagnosis_date", date);
+            data.put("status", status);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.addMedicalCondition(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Condition added", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        fetchOverviewData(); // Refresh list
+                    } else {
+                        Toast.makeText(getContext(), "Failed to add condition", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         private void fetchOverviewData() {

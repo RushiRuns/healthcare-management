@@ -65,6 +65,17 @@
             app:layout_constraintStart_toEndOf="@id/avatar"
             app:layout_constraintTop_toBottomOf="@id/patientId" />
 
+        <ImageButton
+            android:id="@+id/btnEditProfile"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_edit"
+            app:layout_constraintStart_toEndOf="@id/patientDemographics"
+            app:layout_constraintTop_toBottomOf="@id/patientId"
+            app:layout_constraintBottom_toBottomOf="@id/patientDemographics"/>
+
         <TextView
             android:id="@+id/bloodType"
             android:layout_width="wrap_content"
@@ -112,31 +123,44 @@
             android:padding="12dp"
             app:layout_constraintTop_toBottomOf="@id/phoneIcon">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <ImageView
+                    android:id="@+id/alertIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/ic_alert" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/alertIcon"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="8dp"
                     android:text="ALLERGIES"
                     android:textColor="@color/patient_allergy_text"
                     android:textSize="12sp"
                     android:textStyle="bold" />
-            </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnAddAllergy"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_input_add" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/patientAllergies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="28dp"
+                android:layout_marginTop="4dp"
                 android:text="None"
                 android:textColor="@color/patient_allergy_text"
                 android:textSize="14sp" />

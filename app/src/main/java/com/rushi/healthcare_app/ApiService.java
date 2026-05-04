@@ -34,4 +34,13 @@ public interface ApiService {
 
     @GET("notes/index.php")
     Call<ConsultationNoteResponse> getNotes(@Query("patient_id") String patientId);
+
+    @POST("medical_history/add.php")
+    Call<Void> addMedicalCondition(@Body HashMap<String, String> conditionData);
+
+    @POST("patients/update_profile.php")
+    Call<Void> updatePatientProfile(@Body HashMap<String, String> profileData);
+
+    @POST("patients/add_allergy.php")
+    Call<Void> addPatientAllergy(@Body HashMap<String, String> allergyData);
 }
