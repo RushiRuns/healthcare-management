@@ -18,10 +18,21 @@ public class PatientDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
+        // Get patient details from intent
+        String patientName = getIntent().getStringExtra("PATIENT_NAME");
+        String patientId = getIntent().getStringExtra("PATIENT_ID");
+
+        if (patientName != null) {
+            getSupportActionBar().setTitle(patientName);
+        }
+        if (patientId == null) {
+            patientId = "1"; // Fallback for testing
+        }
+
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
 
-        PatientPagerAdapter adapter = new PatientPagerAdapter(this);
+        PatientPagerAdapter adapter = new PatientPagerAdapter(this, patientId);
         viewPager.setAdapter(adapter);
 
         new TabLayoutMediator(tabLayout, viewPager,

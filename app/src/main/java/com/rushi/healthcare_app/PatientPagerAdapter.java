@@ -7,19 +7,22 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class PatientPagerAdapter extends FragmentStateAdapter {
 
-    public PatientPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+    private String patientId;
+
+    public PatientPagerAdapter(@NonNull FragmentActivity fragmentActivity, String patientId) {
         super(fragmentActivity);
+        this.patientId = patientId;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case 0: return new PatientFragments.OverviewFragment();
-            case 1: return new PatientFragments.RxFragment();
-            case 2: return new PatientFragments.NotesFragment();
-            case 3: return new PatientFragments.VitalsFragment();
-            default: return new PatientFragments.OverviewFragment();
+            case 0: return PatientFragments.OverviewFragment.newInstance(patientId);
+            case 1: return PatientFragments.RxFragment.newInstance(patientId);
+            case 2: return PatientFragments.NotesFragment.newInstance(patientId);
+            case 3: return PatientFragments.VitalsFragment.newInstance(patientId);
+            default: return PatientFragments.OverviewFragment.newInstance(patientId);
         }
     }
 

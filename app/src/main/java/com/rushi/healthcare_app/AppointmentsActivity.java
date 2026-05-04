@@ -36,6 +36,7 @@ public class AppointmentsActivity extends AppCompatActivity {
     private TextView sheetAllergies;
     private TextView sheetConditions;
     private MaterialButton btnOpenFullRecord;
+    private String currentSelectedPatientId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,8 +108,8 @@ public class AppointmentsActivity extends AppCompatActivity {
         btnOpenFullRecord.setOnClickListener(v -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Intent intent = new Intent(AppointmentsActivity.this, PatientDetailActivity.class);
-            // Pass the patient name or ID to the detail activity
             intent.putExtra("PATIENT_NAME", sheetPatientName.getText().toString());
+            intent.putExtra("PATIENT_ID", currentSelectedPatientId);
             startActivity(intent);
         });
 
@@ -159,6 +160,7 @@ public class AppointmentsActivity extends AppCompatActivity {
     }
 
     private void showPatientDetails(Appointment appointment) {
+        currentSelectedPatientId = appointment.getPatientId();
         // Show temporary loading state
         sheetPatientName.setText(appointment.getPatientName());
         sheetAllergies.setText("Loading...");

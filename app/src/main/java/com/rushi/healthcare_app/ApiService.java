@@ -6,6 +6,9 @@ import retrofit2.http.Query;
 import java.util.HashMap;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import com.rushi.healthcare_app.models.PrescriptionResponse;
+import com.rushi.healthcare_app.models.VitalSignResponse;
+import com.rushi.healthcare_app.models.ConsultationNoteResponse;
 
 public interface ApiService {
     @GET("appointments/index.php")
@@ -22,4 +25,13 @@ public interface ApiService {
 
     @POST("appointments/index.php")
     Call<AppointmentResponse> createAppointment(@Body HashMap<String, Object> appointmentData);
+
+    @GET("prescriptions/index.php")
+    Call<PrescriptionResponse> getPrescriptions(@Query("patient_id") String patientId);
+
+    @GET("vitals/index.php")
+    Call<VitalSignResponse> getVitals(@Query("patient_id") String patientId);
+
+    @GET("notes/index.php")
+    Call<ConsultationNoteResponse> getNotes(@Query("patient_id") String patientId);
 }
