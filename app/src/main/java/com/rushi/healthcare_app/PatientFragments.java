@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.util.Log;
+import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,6 +28,8 @@ public class PatientFragments {
 
     public static class OverviewFragment extends Fragment {
         private String patientId;
+        private RecyclerView recyclerView;
+        private com.rushi.healthcare_app.adapters.HistoryAdapter adapter;
 
         public static OverviewFragment newInstance(String patientId) {
             OverviewFragment fragment = new OverviewFragment();
@@ -35,10 +39,49 @@ public class PatientFragments {
             return fragment;
         }
 
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                patientId = getArguments().getString("PATIENT_ID");
+            }
+        }
+
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             return inflater.inflate(R.layout.fragment_overview, container, false);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            Log.d("PatientFrag", "OverviewFragment created with patientId: " + patientId);
+            recyclerView = view.findViewById(R.id.recyclerViewHistory);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            fetchOverviewData();
+        }
+
+        private void fetchOverviewData() {
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.getPatientDetails(patientId).enqueue(new Callback<PatientResponse>() {
+                @Override
+                public void onResponse(Call<PatientResponse> call, Response<PatientResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                        List<MedicalHistory> history = response.body().getData().getMedicalHistory();
+                        if (history != null && !history.isEmpty()) {
+                            adapter = new com.rushi.healthcare_app.adapters.HistoryAdapter(history);
+                            recyclerView.setAdapter(adapter);
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<PatientResponse> call, Throwable t) {
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Failed to load overview", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 
@@ -72,6 +115,7 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+            Log.d("PatientFrag", "RxFragment created with patientId: " + patientId);
             recyclerView = view.findViewById(R.id.recyclerViewRx);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             fetchPrescriptions();
@@ -127,6 +171,7 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+            Log.d("PatientFrag", "NotesFragment created with patientId: " + patientId);
             recyclerView = view.findViewById(R.id.recyclerViewNotes);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             fetchNotes();
@@ -182,6 +227,7 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+            Log.d("PatientFrag", "VitalsFragment created with patientId: " + patientId);
             recyclerView = view.findViewById(R.id.recyclerViewVitals);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             fetchVitals();

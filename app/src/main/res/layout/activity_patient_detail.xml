@@ -133,10 +133,11 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/patientAllergies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="28dp"
-                android:text="Penicillin, Dust Mites"
+                android:text="None"
                 android:textColor="@color/patient_allergy_text"
                 android:textSize="14sp" />
         </LinearLayout>

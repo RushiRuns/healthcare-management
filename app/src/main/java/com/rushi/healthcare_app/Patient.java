@@ -1,6 +1,7 @@
 package com.rushi.healthcare_app;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.Calendar;
 import java.util.List;
 
 public class Patient {
@@ -22,6 +23,9 @@ public class Patient {
     @SerializedName("gender")
     private String gender;
 
+    @SerializedName("blood_type")
+    private String bloodType;
+
     @SerializedName("phone")
     private String phone;
 
@@ -38,8 +42,19 @@ public class Patient {
     public String getName() { return firstName + " " + lastName; }
     public String getDob() { return dob; }
     public String getGender() { return gender; }
+    public String getBloodType() { return bloodType != null ? bloodType : "N/A"; }
     public String getPhone() { return phone; }
     public String getEmail() { return email; }
+    public List<MedicalHistory> getMedicalHistory() { return medicalHistory; }
+
+    public String getAge() {
+        if (dob == null || dob.length() < 4) return "";
+        try {
+            int birthYear = Integer.parseInt(dob.substring(0, 4));
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            return (currentYear - birthYear) + "y";
+        } catch (Exception e) { return ""; }
+    }
 
     public String getAllergiesSummary() {
         if (allergies == null || allergies.isEmpty()) return "None";
