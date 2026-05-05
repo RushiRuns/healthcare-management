@@ -43,4 +43,10 @@ public interface ApiService {
 
     @POST("patients/add_allergy.php")
     Call<Void> addPatientAllergy(@Body HashMap<String, String> allergyData);
+
+    @POST("medical_history/update.php")
+    Call<Void> updateMedicalCondition(@Body HashMap<String, String> conditionData);
+
+    @POST("medical_history/delete.php")
+    Call<Void> deleteMedicalCondition(@Body HashMap<String, String> conditionData);
 }

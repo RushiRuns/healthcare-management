@@ -65,7 +65,12 @@ public class Patient {
     public String getConditionsSummary() {
         if (medicalHistory == null || medicalHistory.isEmpty()) return "None";
         StringBuilder sb = new StringBuilder();
-        for (MedicalHistory h : medicalHistory) sb.append(h.getConditionName()).append(", ");
+        for (MedicalHistory h : medicalHistory) {
+            if (h.getStatus() != null && h.getStatus().equalsIgnoreCase("Active")) {
+                sb.append(h.getConditionName()).append(", ");
+            }
+        }
+        if (sb.length() == 0) return "None";
         return sb.substring(0, sb.length() - 2);
     }
 }

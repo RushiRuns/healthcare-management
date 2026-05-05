@@ -28,8 +28,10 @@ public class PatientFragments {
 
     public static class OverviewFragment extends Fragment {
         private String patientId;
-        private RecyclerView recyclerView;
-        private com.rushi.healthcare_app.adapters.HistoryAdapter adapter;
+        private RecyclerView recyclerViewActive;
+        private RecyclerView recyclerViewPast;
+        private com.rushi.healthcare_app.adapters.HistoryAdapter activeAdapter;
+        private com.rushi.healthcare_app.adapters.HistoryAdapter pastAdapter;
         private android.widget.Button btnAddConditionTop;
 
         public static OverviewFragment newInstance(String patientId) {
@@ -57,16 +59,20 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            recyclerView = view.findViewById(R.id.recyclerViewHistory);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            recyclerViewActive = view.findViewById(R.id.recyclerViewActiveConditions);
+            recyclerViewActive.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            recyclerViewPast = view.findViewById(R.id.recyclerViewPastHistory);
+            recyclerViewPast.setLayoutManager(new LinearLayoutManager(getContext()));
 
             btnAddConditionTop = view.findViewById(R.id.btnAddConditionTop);
-            btnAddConditionTop.setOnClickListener(v -> showAddConditionBottomSheet());
+            btnAddConditionTop.setOnClickListener(v -> showAddConditionBottomSheet(null));
 
             fetchOverviewData();
         }
 
-        private void showAddConditionBottomSheet() {
+        private void showAddConditionBottomSheet(@Nullable MedicalHistory existingRecord) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
                     new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
 
@@ -79,7 +85,17 @@ public class PatientFragments {
             android.widget.RadioGroup radioGroup = bottomSheetView.findViewById(R.id.radioGroupStatus);
             android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveCondition);
 
-            // Add DatePicker logic here
+            if (existingRecord != null) {
+                inputName.setText(existingRecord.getConditionName());
+                inputDate.setText(existingRecord.getDiagnosisDate());
+                if (existingRecord.getStatus() != null && existingRecord.getStatus().equalsIgnoreCase("Resolved")) {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(radioGroup.getChildAt(1).getId())).setChecked(true);
+                } else {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(radioGroup.getChildAt(0).getId())).setChecked(true);
+                }
+                btnSave.setText("Update Condition");
+            }
+
             inputDate.setOnClickListener(v -> {
                 java.util.Calendar calendar = java.util.Calendar.getInstance();
                 new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
@@ -101,7 +117,11 @@ public class PatientFragments {
                     return;
                 }
 
-                saveConditionToDatabase(conditionName, diagnosisDate, status, bottomSheetDialog);
+                if (existingRecord == null) {
+                    saveConditionToDatabase(conditionName, diagnosisDate, status, bottomSheetDialog);
+                } else {
+                    updateConditionInDatabase(existingRecord.getHistoryId(), conditionName, diagnosisDate, status, bottomSheetDialog);
+                }
             });
 
             bottomSheetDialog.show();
@@ -121,19 +141,59 @@ public class PatientFragments {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Condition added", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-                        fetchOverviewData(); // Refresh list immediately
+                        fetchOverviewData();
                     } else {
-                        // Print exact server error instead of generic message
-                        try {
-                            String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown Error";
-                            android.util.Log.e("OverviewFragment", "Failed to add: " + errorMsg);
-                            Toast.makeText(getContext(), "Failed: " + errorMsg, Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        Toast.makeText(getContext(), "Failed to add", Toast.LENGTH_SHORT).show();
                     }
                 }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
+        private void updateConditionInDatabase(String historyId, String name, String date, String status, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("history_id", historyId);
+            data.put("condition_name", name);
+            data.put("diagnosis_date", date);
+            data.put("status", status);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.updateMedicalCondition(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Condition updated", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        fetchOverviewData();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to update", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void deleteConditionFromDatabase(String historyId) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("history_id", historyId);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.deleteMedicalCondition(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Condition deleted", Toast.LENGTH_SHORT).show();
+                        fetchOverviewData();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to delete", Toast.LENGTH_SHORT).show();
+                    }
+                }
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
                     Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -149,8 +209,38 @@ public class PatientFragments {
                     if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                         List<MedicalHistory> history = response.body().getData().getMedicalHistory();
                         if (history != null) {
-                            adapter = new com.rushi.healthcare_app.adapters.HistoryAdapter(history);
-                            recyclerView.setAdapter(adapter);
+                            java.util.List<MedicalHistory> activeList = new java.util.ArrayList<>();
+                            java.util.List<MedicalHistory> pastList = new java.util.ArrayList<>();
+
+                            for (MedicalHistory item : history) {
+                                if (item.getStatus() != null && item.getStatus().equalsIgnoreCase("Active")) {
+                                    activeList.add(item);
+                                } else {
+                                    pastList.add(item);
+                                }
+                            }
+
+                            com.rushi.healthcare_app.adapters.HistoryAdapter.OnHistoryActionListener listener = new com.rushi.healthcare_app.adapters.HistoryAdapter.OnHistoryActionListener() {
+                                @Override
+                                public void onEdit(MedicalHistory item) {
+                                    showAddConditionBottomSheet(item);
+                                }
+                                @Override
+                                public void onDelete(MedicalHistory item) {
+                                    new android.app.AlertDialog.Builder(getContext())
+                                            .setTitle("Delete Condition")
+                                            .setMessage("Are you sure you want to delete this record?")
+                                            .setPositiveButton("Delete", (dialog, which) -> deleteConditionFromDatabase(item.getHistoryId()))
+                                            .setNegativeButton("Cancel", null)
+                                            .show();
+                                }
+                            };
+
+                            activeAdapter = new com.rushi.healthcare_app.adapters.HistoryAdapter(activeList, listener);
+                            recyclerViewActive.setAdapter(activeAdapter);
+
+                            pastAdapter = new com.rushi.healthcare_app.adapters.HistoryAdapter(pastList, listener);
+                            recyclerViewPast.setAdapter(pastAdapter);
                         }
                     }
                 }

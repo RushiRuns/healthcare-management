@@ -17,15 +17,33 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MEDICAL HISTORY &amp; CONDITIONS"
+        android:text="CURRENT CONDITIONS (ACTIVE)"
         android:textColor="@color/patient_text_secondary"
         android:textSize="12sp"
         android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewHistory"
+        android:id="@+id/recyclerViewActiveConditions"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:clipToPadding="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PAST HISTORY (RESOLVED)"
+        android:textColor="@color/patient_text_secondary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPastHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false" />
+
 </LinearLayout>

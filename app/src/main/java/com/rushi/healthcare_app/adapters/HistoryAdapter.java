@@ -12,9 +12,16 @@ import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
     private List<MedicalHistory> historyList;
+    private OnHistoryActionListener listener;
 
-    public HistoryAdapter(List<MedicalHistory> historyList) {
+    public interface OnHistoryActionListener {
+        void onEdit(MedicalHistory history);
+        void onDelete(MedicalHistory history);
+    }
+
+    public HistoryAdapter(List<MedicalHistory> historyList, OnHistoryActionListener listener) {
         this.historyList = historyList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -26,7 +33,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
-        holder.tvConditionName.setText(historyList.get(position).getConditionName());
+        MedicalHistory item = historyList.get(position);
+        holder.tvConditionName.setText(item.getConditionName() + " (" + item.getDiagnosisDate() + ")");
+
+        holder.btnEditHistory.setOnClickListener(v -> {
+            if (listener != null) listener.onEdit(item);
+        });
+
+        holder.btnDeleteHistory.setOnClickListener(v -> {
+            if (listener != null) listener.onDelete(item);
+        });
     }
 
     @Override
@@ -36,9 +52,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
         TextView tvConditionName;
+        TextView btnEditHistory;
+        TextView btnDeleteHistory;
+
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
             tvConditionName = itemView.findViewById(R.id.tvConditionName);
+            btnEditHistory = itemView.findViewById(R.id.btnEditHistory);
+            btnDeleteHistory = itemView.findViewById(R.id.btnDeleteHistory);
         }
     }
 }
