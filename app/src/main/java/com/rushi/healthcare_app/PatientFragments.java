@@ -254,8 +254,10 @@ public class PatientFragments {
 
     public static class RxFragment extends Fragment {
         private String patientId;
-        private RecyclerView recyclerView;
-        private RxAdapter adapter;
+        private RecyclerView recyclerViewActiveRx;
+        private RecyclerView recyclerViewPastRx;
+        private RxAdapter activeAdapter;
+        private RxAdapter pastAdapter;
         private android.widget.Button btnAddMedication;
 
         public static RxFragment newInstance(String patientId) {
@@ -283,16 +285,21 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            recyclerView = view.findViewById(R.id.recyclerViewRx);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            recyclerViewActiveRx = view.findViewById(R.id.recyclerViewActiveRx);
+            recyclerViewActiveRx.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            recyclerViewPastRx = view.findViewById(R.id.recyclerViewPastRx);
+            recyclerViewPastRx.setLayoutManager(new LinearLayoutManager(getContext()));
 
             btnAddMedication = view.findViewById(R.id.btnAddMedication);
-            btnAddMedication.setOnClickListener(v -> showAddPrescriptionBottomSheet());
+            btnAddMedication.setOnClickListener(v -> showAddPrescriptionBottomSheet(null));
 
             fetchPrescriptions();
+            fetchPastPrescriptions();
         }
 
-        private void showAddPrescriptionBottomSheet() {
+        private void showAddPrescriptionBottomSheet(@Nullable com.rushi.healthcare_app.models.PrescriptionRecord existingRecord) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
                     new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
 
@@ -300,11 +307,28 @@ public class PatientFragments {
                     .inflate(R.layout.bottom_sheet_add_prescription, null);
             bottomSheetDialog.setContentView(bottomSheetView);
 
+            android.widget.TextView sheetTitle = bottomSheetView.findViewById(R.id.textRxSheetTitle);
             android.widget.EditText inputName = bottomSheetView.findViewById(R.id.inputMedicationName);
             android.widget.EditText inputDosage = bottomSheetView.findViewById(R.id.inputDosage);
             android.widget.EditText inputFrequency = bottomSheetView.findViewById(R.id.inputFrequency);
             android.widget.EditText inputDate = bottomSheetView.findViewById(R.id.inputStartDate);
+            android.widget.RadioGroup radioGroup = bottomSheetView.findViewById(R.id.radioGroupRxStatus);
             android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSavePrescription);
+
+            if (existingRecord != null) {
+                sheetTitle.setText("Update Medication");
+                inputName.setText(existingRecord.getMedicationName());
+                inputDosage.setText(existingRecord.getDosage());
+                inputFrequency.setText(existingRecord.getFrequency());
+                inputDate.setText(existingRecord.getStartDate());
+
+                if (existingRecord.getStatus() != null && existingRecord.getStatus().equalsIgnoreCase("Completed")) {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioRxCompleted)).setChecked(true);
+                } else {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioRxActive)).setChecked(true);
+                }
+                btnSave.setText("Update Prescription");
+            }
 
             inputDate.setOnClickListener(v -> {
                 java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -320,24 +344,33 @@ public class PatientFragments {
                 String freq = inputFrequency.getText().toString().trim();
                 String date = inputDate.getText().toString().trim();
 
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                android.widget.RadioButton selectedRadio = bottomSheetView.findViewById(selectedId);
+                String status = selectedRadio.getText().toString();
+
                 if (name.isEmpty() || dosage.isEmpty() || date.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill in Name, Dosage, and Start Date", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                savePrescriptionToDatabase(name, dosage, freq, date, bottomSheetDialog);
+                if (existingRecord == null) {
+                    savePrescriptionToDatabase(name, dosage, freq, date, status, bottomSheetDialog);
+                } else {
+                    updatePrescriptionInDatabase(existingRecord.getPrescriptionId(), name, dosage, freq, date, status, bottomSheetDialog);
+                }
             });
 
             bottomSheetDialog.show();
         }
 
-        private void savePrescriptionToDatabase(String name, String dosage, String freq, String date, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+        private void savePrescriptionToDatabase(String name, String dosage, String freq, String date, String status, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
             java.util.HashMap<String, String> data = new java.util.HashMap<>();
             data.put("patient_id", patientId);
             data.put("medication_name", name);
             data.put("dosage", dosage);
             data.put("frequency", freq);
             data.put("start_date", date);
+            data.put("status", status);
 
             ApiService apiService = RetrofitClient.getApiService();
             apiService.addPrescription(data).enqueue(new Callback<Void>() {
@@ -347,20 +380,66 @@ public class PatientFragments {
                         Toast.makeText(getContext(), "Prescription added", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         fetchPrescriptions();
+                        fetchPastPrescriptions();
                     } else {
-                        try {
-                            String err = response.errorBody() != null ? response.errorBody().string() : "Unknown backend error";
-                            android.util.Log.e("RxError", "Backend Error: " + err);
-                            Toast.makeText(getContext(), "Backend Error: " + err, Toast.LENGTH_LONG).show();
-                        } catch (java.io.IOException e) {
-                            e.printStackTrace();
-                        }
+                        Toast.makeText(getContext(), "Failed to add prescription", Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    android.util.Log.e("RxError", "Network Error: " + t.getMessage());
-                    Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void updatePrescriptionInDatabase(String prescriptionId, String name, String dosage, String freq, String date, String status, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("prescription_id", prescriptionId);
+            data.put("medication_name", name);
+            data.put("dosage", dosage);
+            data.put("frequency", freq);
+            data.put("start_date", date);
+            data.put("status", status);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.updatePrescription(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Prescription updated", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        fetchPrescriptions();
+                        fetchPastPrescriptions();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to update prescription", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void deletePrescriptionFromDatabase(String prescriptionId) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("prescription_id", prescriptionId);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.deletePrescription(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Prescription deleted", Toast.LENGTH_SHORT).show();
+                        fetchPrescriptions();
+                        fetchPastPrescriptions();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to delete prescription", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -370,29 +449,59 @@ public class PatientFragments {
             apiService.getPrescriptions(patientId).enqueue(new Callback<PrescriptionResponse>() {
                 @Override
                 public void onResponse(Call<PrescriptionResponse> call, Response<PrescriptionResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        if (response.body().records != null && !response.body().records.isEmpty()) {
-                            adapter = new RxAdapter(response.body().records);
-                            recyclerView.setAdapter(adapter);
-                        } else {
-                            android.util.Log.d("RxFetch", "Records list is empty");
-                            Toast.makeText(getContext(), "No active prescriptions found", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        try {
-                            String err = response.errorBody() != null ? response.errorBody().string() : "Unknown backend error";
-                            android.util.Log.e("RxError", "Fetch Error: " + err);
-                            Toast.makeText(getContext(), "Fetch Error: " + err, Toast.LENGTH_LONG).show();
-                        } catch (java.io.IOException e) {
-                            e.printStackTrace();
-                        }
+                    if (response.isSuccessful() && response.body() != null && response.body().records != null) {
+                        activeAdapter = new RxAdapter(response.body().records, new RxAdapter.OnRxActionListener() {
+                            @Override
+                            public void onEdit(com.rushi.healthcare_app.models.PrescriptionRecord record) {
+                                showAddPrescriptionBottomSheet(record);
+                            }
+                            @Override
+                            public void onDelete(com.rushi.healthcare_app.models.PrescriptionRecord record) {
+                                new android.app.AlertDialog.Builder(getContext())
+                                        .setTitle("Delete Prescription")
+                                        .setMessage("Are you sure you want to delete this prescription?")
+                                        .setPositiveButton("Delete", (dialog, which) -> deletePrescriptionFromDatabase(record.getPrescriptionId()))
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        });
+                        recyclerViewActiveRx.setAdapter(activeAdapter);
                     }
                 }
-
                 @Override
                 public void onFailure(Call<PrescriptionResponse> call, Throwable t) {
-                    android.util.Log.e("RxError", "Fetch Network Error: " + t.getMessage());
-                    Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    android.util.Log.e("RxError", "Fetch Active Error: " + t.getMessage());
+                }
+            });
+        }
+
+        private void fetchPastPrescriptions() {
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.getPastPrescriptions(patientId).enqueue(new Callback<PrescriptionResponse>() {
+                @Override
+                public void onResponse(Call<PrescriptionResponse> call, Response<PrescriptionResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().records != null) {
+                        pastAdapter = new RxAdapter(response.body().records, new RxAdapter.OnRxActionListener() {
+                            @Override
+                            public void onEdit(com.rushi.healthcare_app.models.PrescriptionRecord record) {
+                                showAddPrescriptionBottomSheet(record);
+                            }
+                            @Override
+                            public void onDelete(com.rushi.healthcare_app.models.PrescriptionRecord record) {
+                                new android.app.AlertDialog.Builder(getContext())
+                                        .setTitle("Delete Prescription")
+                                        .setMessage("Are you sure you want to delete this prescription?")
+                                        .setPositiveButton("Delete", (dialog, which) -> deletePrescriptionFromDatabase(record.getPrescriptionId()))
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        });
+                        recyclerViewPastRx.setAdapter(pastAdapter);
+                    }
+                }
+                @Override
+                public void onFailure(Call<PrescriptionResponse> call, Throwable t) {
+                    android.util.Log.e("RxError", "Fetch Past Error: " + t.getMessage());
                 }
             });
         }

@@ -8,6 +8,7 @@
     android:padding="24dp">
 
     <TextView
+        android:id="@+id/textRxSheetTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -56,13 +57,45 @@
         android:id="@+id/inputStartDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:backgroundTint="@color/patient_border"
         android:focusable="false"
         android:hint="Start Date (YYYY-MM-DD)"
         android:padding="12dp"
         android:textColor="@color/patient_text_primary"
         android:textColorHint="@color/patient_text_secondary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Status"
+        android:textColor="@color/patient_text_secondary"
+        android:textSize="14sp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupRxStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioRxActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Active"
+            android:textColor="@color/patient_text_primary" />
+
+        <RadioButton
+            android:id="@+id/radioRxCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Completed"
+            android:textColor="@color/patient_text_primary" />
+    </RadioGroup>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSavePrescription"

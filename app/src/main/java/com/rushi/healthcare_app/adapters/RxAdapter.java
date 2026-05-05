@@ -1,5 +1,4 @@
 package com.rushi.healthcare_app.adapters;
-import com.rushi.healthcare_app.models.PrescriptionRecord;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,15 +7,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.rushi.healthcare_app.R;
-
+import com.rushi.healthcare_app.models.PrescriptionRecord;
 import java.util.List;
 
 public class RxAdapter extends RecyclerView.Adapter<RxAdapter.RxViewHolder> {
 
     private List<PrescriptionRecord> prescriptions;
+    private OnRxActionListener listener;
 
-    public RxAdapter(List<PrescriptionRecord> prescriptions) {
+    public interface OnRxActionListener {
+        void onEdit(PrescriptionRecord record);
+        void onDelete(PrescriptionRecord record);
+    }
+
+    public RxAdapter(List<PrescriptionRecord> prescriptions, OnRxActionListener listener) {
         this.prescriptions = prescriptions;
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,6 +39,14 @@ public class RxAdapter extends RecyclerView.Adapter<RxAdapter.RxViewHolder> {
         holder.textDosage.setText(record.getDosage() != null ? record.getDosage() : "N/A");
         holder.textFrequency.setText(record.getFrequency() != null ? record.getFrequency() : "N/A");
         holder.textDate.setText("Prescribed: " + (record.getStartDate() != null ? record.getStartDate() : "N/A"));
+
+        holder.btnEdit.setOnClickListener(v -> {
+            if (listener != null) listener.onEdit(record);
+        });
+
+        holder.btnDelete.setOnClickListener(v -> {
+            if (listener != null) listener.onDelete(record);
+        });
     }
 
     @Override
@@ -41,7 +55,7 @@ public class RxAdapter extends RecyclerView.Adapter<RxAdapter.RxViewHolder> {
     }
 
     static class RxViewHolder extends RecyclerView.ViewHolder {
-        TextView textMedicationName, textDosage, textFrequency, textDate;
+        TextView textMedicationName, textDosage, textFrequency, textDate, btnEdit, btnDelete;
 
         public RxViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -49,6 +63,8 @@ public class RxAdapter extends RecyclerView.Adapter<RxAdapter.RxViewHolder> {
             textDosage = itemView.findViewById(R.id.textDosage);
             textFrequency = itemView.findViewById(R.id.textFrequency);
             textDate = itemView.findViewById(R.id.textDate);
+            btnEdit = itemView.findViewById(R.id.btnEditRx);
+            btnDelete = itemView.findViewById(R.id.btnDeleteRx);
         }
     }
 }

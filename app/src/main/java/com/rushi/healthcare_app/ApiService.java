@@ -52,4 +52,16 @@ public interface ApiService {
 
     @retrofit2.http.POST("prescriptions/add.php")
     retrofit2.Call<Void> addPrescription(@retrofit2.http.Body java.util.HashMap<String, String> data);
+
+    @retrofit2.http.GET("prescriptions/history.php")
+    retrofit2.Call<com.rushi.healthcare_app.models.PrescriptionResponse> getPastPrescriptions(@retrofit2.http.Query("patient_id") String patientId);
+
+    @retrofit2.http.POST("prescriptions/update_status.php")
+    retrofit2.Call<Void> updatePrescriptionStatus(@retrofit2.http.Body java.util.HashMap<String, String> data);
+
+    @retrofit2.http.POST("prescriptions/update.php")
+    retrofit2.Call<Void> updatePrescription(@retrofit2.http.Body java.util.HashMap<String, String> data);
+
+    @retrofit2.http.POST("prescriptions/delete.php")
+    retrofit2.Call<Void> deletePrescription(@retrofit2.http.Body java.util.HashMap<String, String> data);
 }
