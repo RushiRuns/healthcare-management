@@ -24,11 +24,13 @@
         android:layout_marginBottom="12dp"/>
 
     <EditText
-        android:id="@+id/inputEditAge"
+        android:id="@+id/inputEditDOB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Age"
-        android:inputType="number"
+        android:hint="Date of Birth (YYYY-MM-DD)"
+        android:focusable="false"
+        android:clickable="true"
+        android:inputType="none"
         android:layout_marginBottom="12dp"/>
 
     <EditText
@@ -36,6 +38,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Blood Type (e.g., O+, AB-)"
+        android:inputType="text"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/inputEditAllergies"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Allergies (comma separated)"
         android:inputType="text"
         android:layout_marginBottom="24dp"/>
 

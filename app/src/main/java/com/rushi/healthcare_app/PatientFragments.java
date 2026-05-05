@@ -30,7 +30,7 @@ public class PatientFragments {
         private String patientId;
         private RecyclerView recyclerView;
         private com.rushi.healthcare_app.adapters.HistoryAdapter adapter;
-        private com.google.android.material.floatingactionbutton.FloatingActionButton fabAddCondition;
+        private android.widget.Button btnAddConditionTop;
 
         public static OverviewFragment newInstance(String patientId) {
             OverviewFragment fragment = new OverviewFragment();
@@ -60,8 +60,8 @@ public class PatientFragments {
             recyclerView = view.findViewById(R.id.recyclerViewHistory);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            fabAddCondition = view.findViewById(R.id.fabAddCondition);
-            fabAddCondition.setOnClickListener(v -> showAddConditionBottomSheet());
+            btnAddConditionTop = view.findViewById(R.id.btnAddConditionTop);
+            btnAddConditionTop.setOnClickListener(v -> showAddConditionBottomSheet());
 
             fetchOverviewData();
         }
@@ -112,7 +112,7 @@ public class PatientFragments {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Condition added", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-                        fetchOverviewData(); // Refresh list
+                        fetchOverviewData(); // Refresh list immediately
                     } else {
                         Toast.makeText(getContext(), "Failed to add condition", Toast.LENGTH_SHORT).show();
                     }
@@ -132,17 +132,24 @@ public class PatientFragments {
                 public void onResponse(Call<PatientResponse> call, Response<PatientResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                         List<MedicalHistory> history = response.body().getData().getMedicalHistory();
-                        if (history != null && !history.isEmpty()) {
+                        if (history != null) {
                             adapter = new com.rushi.healthcare_app.adapters.HistoryAdapter(history);
                             recyclerView.setAdapter(adapter);
+                        }
+                    }
+                    else {
+                        // Add this log to see why the server rejected the request
+                        android.util.Log.e("API_ERROR", "Response Error Code: " + response.code());
+                        try {
+                            android.util.Log.e("API_ERROR", "Response Error Body: " + response.errorBody().string());
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
                 @Override
                 public void onFailure(Call<PatientResponse> call, Throwable t) {
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(), "Failed to load overview", Toast.LENGTH_SHORT).show();
-                    }
+                    android.util.Log.e("OverviewFragment", "Overview fetch failed", t);
                 }
             });
         }

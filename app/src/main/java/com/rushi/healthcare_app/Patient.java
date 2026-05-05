@@ -32,7 +32,8 @@ public class Patient {
     @SerializedName("email")
     private String email;
 
-    private List<Allergy> allergies;
+    @SerializedName("allergies")
+    private String allergies;
 
     @SerializedName("medical_history")
     private List<MedicalHistory> medicalHistory;
@@ -57,10 +58,8 @@ public class Patient {
     }
 
     public String getAllergiesSummary() {
-        if (allergies == null || allergies.isEmpty()) return "None";
-        StringBuilder sb = new StringBuilder();
-        for (Allergy a : allergies) sb.append(a.getAllergen()).append(", ");
-        return sb.substring(0, sb.length() - 2);
+        if (allergies == null || allergies.trim().isEmpty()) return "None";
+        return allergies;
     }
 
     public String getConditionsSummary() {

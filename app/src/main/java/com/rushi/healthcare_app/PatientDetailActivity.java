@@ -1,20 +1,27 @@
 package com.rushi.healthcare_app;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,8 +29,9 @@ import retrofit2.Response;
 public class PatientDetailActivity extends AppCompatActivity {
 
     private String patientId;
+    private Patient currentPatient; // Store current data for pre-filling
     private TextView tvAvatar, tvPatientId, tvDemographics, tvBloodType, tvPhone, tvAllergies;
-    private ImageButton btnEditProfile, btnAddAllergy;
+    private ImageView btnToolbarEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +48,12 @@ public class PatientDetailActivity extends AppCompatActivity {
         tvBloodType = findViewById(R.id.bloodType);
         tvPhone = findViewById(R.id.patientPhone);
         tvAllergies = findViewById(R.id.patientAllergies);
-
-        btnEditProfile = findViewById(R.id.btnEditProfile);
-        btnAddAllergy = findViewById(R.id.btnAddAllergy);
+        btnToolbarEdit = findViewById(R.id.btnToolbarEdit);
 
         patientId = getIntent().getStringExtra("PATIENT_ID");
         if (patientId == null) patientId = "1";
 
-        btnEditProfile.setOnClickListener(v -> showEditProfileBottomSheet());
-        btnAddAllergy.setOnClickListener(v -> showAddAllergyBottomSheet());
+        btnToolbarEdit.setOnClickListener(v -> showEditProfileBottomSheet());
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
@@ -74,60 +79,49 @@ public class PatientDetailActivity extends AppCompatActivity {
         dialog.setContentView(view);
 
         EditText etPhone = view.findViewById(R.id.inputEditPhone);
+        EditText etDOB = view.findViewById(R.id.inputEditDOB);
         EditText etBlood = view.findViewById(R.id.inputEditBloodType);
+        EditText etAllergies = view.findViewById(R.id.inputEditAllergies);
         Button btnSave = view.findViewById(R.id.btnSaveProfile);
 
-        // Pre-fill with current data
-        etPhone.setText(tvPhone.getText().toString());
-        etBlood.setText(tvBloodType.getText().toString());
+        // Pre-fill data
+        if (currentPatient != null) {
+            etPhone.setText(currentPatient.getPhone());
+            etDOB.setText(currentPatient.getDob());
+            etBlood.setText(currentPatient.getBloodType().equals("N/A") ? "" : currentPatient.getBloodType());
+            etAllergies.setText(currentPatient.getAllergiesSummary().equals("None") ? "" : currentPatient.getAllergiesSummary());
+        }
+
+        // DatePicker for DOB
+        etDOB.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            new DatePickerDialog(this, (view1, year, month, dayOfMonth) -> {
+                String selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                etDOB.setText(selectedDate);
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        });
 
         btnSave.setOnClickListener(v -> {
             HashMap<String, String> data = new HashMap<>();
             data.put("patient_id", patientId);
-            data.put("phone", etPhone.getText().toString());
-            data.put("blood_type", etBlood.getText().toString());
+            data.put("phone", etPhone.getText().toString().trim());
+            data.put("date_of_birth", etDOB.getText().toString().trim());
+            data.put("blood_type", etBlood.getText().toString().trim());
+            data.put("allergies", etAllergies.getText().toString().trim());
 
             RetrofitClient.getApiService().updatePatientProfile(data).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         dialog.dismiss();
-                        fetchPatientHeader();
+                        fetchPatientHeader(); // Refresh UI instantly
+                    } else {
+                        Toast.makeText(PatientDetailActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(PatientDetailActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-        dialog.show();
-    }
-
-    private void showAddAllergyBottomSheet() {
-        BottomSheetDialog dialog = new BottomSheetDialog(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_add_allergy, null);
-        dialog.setContentView(view);
-
-        EditText etAllergy = view.findViewById(R.id.inputAllergyName);
-        Button btnSave = view.findViewById(R.id.btnSaveAllergy);
-
-        btnSave.setOnClickListener(v -> {
-            HashMap<String, String> data = new HashMap<>();
-            data.put("patient_id", patientId);
-            data.put("allergy", etAllergy.getText().toString());
-
-            RetrofitClient.getApiService().addPatientAllergy(data).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        dialog.dismiss();
-                        fetchPatientHeader();
-                    }
-                }
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(PatientDetailActivity.this, "Failed to add", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PatientDetailActivity.this, "Network error", Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -139,23 +133,31 @@ public class PatientDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PatientResponse> call, Response<PatientResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Patient p = response.body().getData();
-                    if (p != null) {
-                        if (p.getName() != null && !p.getName().isEmpty()) {
-                            tvAvatar.setText(p.getName().substring(0, 1).toUpperCase());
-                            if (getSupportActionBar() != null) getSupportActionBar().setTitle(p.getName());
+                    currentPatient = response.body().getData();
+                    if (currentPatient != null) {
+                        if (currentPatient.getName() != null && !currentPatient.getName().isEmpty()) {
+                            tvAvatar.setText(currentPatient.getName().substring(0, 1).toUpperCase());
+                            if (getSupportActionBar() != null) getSupportActionBar().setTitle(currentPatient.getName());
                         }
-                        tvPatientId.setText(p.getMedicalId());
-                        tvDemographics.setText(p.getAge() + " • " + p.getGender());
-                        tvBloodType.setText(p.getBloodType());
-                        tvPhone.setText(p.getPhone());
-                        tvAllergies.setText(p.getAllergiesSummary());
+                        tvPatientId.setText(currentPatient.getMedicalId());
+                        tvDemographics.setText(currentPatient.getAge() + " • " + currentPatient.getGender());
+                        tvBloodType.setText(currentPatient.getBloodType());
+                        tvPhone.setText(currentPatient.getPhone());
+                        tvAllergies.setText(currentPatient.getAllergiesSummary());
+                    }
+                } else {
+                    // Add this log to see why the server rejected the request
+                    android.util.Log.e("API_ERROR", "Response Error Code: " + response.code());
+                    try {
+                        android.util.Log.e("API_ERROR", "Response Error Body: " + response.errorBody().string());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
             @Override
             public void onFailure(Call<PatientResponse> call, Throwable t) {
-                Toast.makeText(PatientDetailActivity.this, "Header error", Toast.LENGTH_SHORT).show();
+                android.util.Log.e("PatientDetailActivity", "Header fetch failed", t);
             }
         });
     }
