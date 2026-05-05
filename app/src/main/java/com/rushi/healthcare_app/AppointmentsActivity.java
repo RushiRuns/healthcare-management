@@ -172,19 +172,33 @@ public class AppointmentsActivity extends AppCompatActivity {
         apiService.getPatientDetails(appointment.getPatientId()).enqueue(new Callback<PatientResponse>() {
             @Override
             public void onResponse(Call<PatientResponse> call, Response<PatientResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                // Changed to check if getData() is not null (same as PatientDetailActivity)
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     Patient patient = response.body().getData();
                     sheetPatientName.setText(patient.getName());
                     sheetAllergies.setText(patient.getAllergiesSummary());
                     sheetConditions.setText(patient.getConditionsSummary());
                 } else {
-                    sheetAllergies.setText("Error fetching data");
+                    sheetAllergies.setText("Data unavailable");
+                    sheetConditions.setText("Data unavailable"); // Fixed stuck "Loading..." text
+
+                    // Log the error to find out why it failed
+                    Log.e("AppointmentsActivity", "Response Error Code: " + response.code());
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("AppointmentsActivity", "Response Error Body: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<PatientResponse> call, Throwable t) {
                 sheetAllergies.setText("Connection failed");
+                sheetConditions.setText("Connection failed"); // Fixed stuck "Loading..." text
+                Log.e("AppointmentsActivity", "API Call Failed", t);
             }
         });
     }
