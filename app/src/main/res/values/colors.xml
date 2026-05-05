@@ -40,4 +40,6 @@
     <color name="avatar_bg_blue">#D3E3FD</color>
     <color name="avatar_text_blue">#041E49</color>
     <color name="search_bg">#F3F4F6</color>
+
+    <color name="patient_border">#E2E8F0</color>
 </resources>

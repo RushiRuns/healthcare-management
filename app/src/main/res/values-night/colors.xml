@@ -43,4 +43,6 @@
     <color name="avatar_bg_blue">#004A77</color>
     <color name="avatar_text_blue">#C2E7FF</color>
     <color name="search_bg">#1E1E1E</color>
+
+    <color name="patient_border">#2D3748</color>
 </resources>

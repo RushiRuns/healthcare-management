@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_sheet_background"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Add Medication"
+        android:textColor="@color/patient_text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/inputMedicationName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/patient_border"
+        android:hint="Medication Name (e.g. Amoxicillin)"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textColor="@color/patient_text_primary"
+        android:textColorHint="@color/patient_text_secondary" />
+
+    <EditText
+        android:id="@+id/inputDosage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/patient_border"
+        android:hint="Dosage (e.g. 500mg)"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textColor="@color/patient_text_primary"
+        android:textColorHint="@color/patient_text_secondary" />
+
+    <EditText
+        android:id="@+id/inputFrequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/patient_border"
+        android:hint="Frequency (e.g. Twice a day)"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textColor="@color/patient_text_primary"
+        android:textColorHint="@color/patient_text_secondary" />
+
+    <EditText
+        android:id="@+id/inputStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/patient_border"
+        android:focusable="false"
+        android:hint="Start Date (YYYY-MM-DD)"
+        android:padding="12dp"
+        android:textColor="@color/patient_text_primary"
+        android:textColorHint="@color/patient_text_secondary" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSavePrescription"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:backgroundTint="@color/patient_primary_blue"
+        android:text="Save Prescription"
+        android:textColor="@android:color/white"
+        app:cornerRadius="12dp" />
+</LinearLayout>

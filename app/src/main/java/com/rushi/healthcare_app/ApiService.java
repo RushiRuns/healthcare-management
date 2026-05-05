@@ -49,4 +49,7 @@ public interface ApiService {
 
     @POST("medical_history/delete.php")
     Call<Void> deleteMedicalCondition(@Body HashMap<String, String> conditionData);
+
+    @retrofit2.http.POST("prescriptions/add.php")
+    retrofit2.Call<Void> addPrescription(@retrofit2.http.Body java.util.HashMap<String, String> data);
 }

@@ -256,6 +256,7 @@ public class PatientFragments {
         private String patientId;
         private RecyclerView recyclerView;
         private RxAdapter adapter;
+        private android.widget.Button btnAddMedication;
 
         public static RxFragment newInstance(String patientId) {
             RxFragment fragment = new RxFragment();
@@ -282,10 +283,86 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            Log.d("PatientFrag", "RxFragment created with patientId: " + patientId);
             recyclerView = view.findViewById(R.id.recyclerViewRx);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            btnAddMedication = view.findViewById(R.id.btnAddMedication);
+            btnAddMedication.setOnClickListener(v -> showAddPrescriptionBottomSheet());
+
             fetchPrescriptions();
+        }
+
+        private void showAddPrescriptionBottomSheet() {
+            com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+
+            View bottomSheetView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.bottom_sheet_add_prescription, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            android.widget.EditText inputName = bottomSheetView.findViewById(R.id.inputMedicationName);
+            android.widget.EditText inputDosage = bottomSheetView.findViewById(R.id.inputDosage);
+            android.widget.EditText inputFrequency = bottomSheetView.findViewById(R.id.inputFrequency);
+            android.widget.EditText inputDate = bottomSheetView.findViewById(R.id.inputStartDate);
+            android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSavePrescription);
+
+            inputDate.setOnClickListener(v -> {
+                java.util.Calendar calendar = java.util.Calendar.getInstance();
+                new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                    String selectedDate = String.format(java.util.Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    inputDate.setText(selectedDate);
+                }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
+            });
+
+            btnSave.setOnClickListener(v -> {
+                String name = inputName.getText().toString().trim();
+                String dosage = inputDosage.getText().toString().trim();
+                String freq = inputFrequency.getText().toString().trim();
+                String date = inputDate.getText().toString().trim();
+
+                if (name.isEmpty() || dosage.isEmpty() || date.isEmpty()) {
+                    Toast.makeText(getContext(), "Please fill in Name, Dosage, and Start Date", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                savePrescriptionToDatabase(name, dosage, freq, date, bottomSheetDialog);
+            });
+
+            bottomSheetDialog.show();
+        }
+
+        private void savePrescriptionToDatabase(String name, String dosage, String freq, String date, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("patient_id", patientId);
+            data.put("medication_name", name);
+            data.put("dosage", dosage);
+            data.put("frequency", freq);
+            data.put("start_date", date);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.addPrescription(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Prescription added", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        fetchPrescriptions();
+                    } else {
+                        try {
+                            String err = response.errorBody() != null ? response.errorBody().string() : "Unknown backend error";
+                            android.util.Log.e("RxError", "Backend Error: " + err);
+                            Toast.makeText(getContext(), "Backend Error: " + err, Toast.LENGTH_LONG).show();
+                        } catch (java.io.IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    android.util.Log.e("RxError", "Network Error: " + t.getMessage());
+                    Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         private void fetchPrescriptions() {
@@ -293,16 +370,29 @@ public class PatientFragments {
             apiService.getPrescriptions(patientId).enqueue(new Callback<PrescriptionResponse>() {
                 @Override
                 public void onResponse(Call<PrescriptionResponse> call, Response<PrescriptionResponse> response) {
-                    if (response.isSuccessful() && response.body() != null && response.body().records != null) {
-                        adapter = new RxAdapter(response.body().records);
-                        recyclerView.setAdapter(adapter);
+                    if (response.isSuccessful() && response.body() != null) {
+                        if (response.body().records != null && !response.body().records.isEmpty()) {
+                            adapter = new RxAdapter(response.body().records);
+                            recyclerView.setAdapter(adapter);
+                        } else {
+                            android.util.Log.d("RxFetch", "Records list is empty");
+                            Toast.makeText(getContext(), "No active prescriptions found", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        try {
+                            String err = response.errorBody() != null ? response.errorBody().string() : "Unknown backend error";
+                            android.util.Log.e("RxError", "Fetch Error: " + err);
+                            Toast.makeText(getContext(), "Fetch Error: " + err, Toast.LENGTH_LONG).show();
+                        } catch (java.io.IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+
                 @Override
                 public void onFailure(Call<PrescriptionResponse> call, Throwable t) {
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(), "Failed to load prescriptions", Toast.LENGTH_SHORT).show();
-                    }
+                    android.util.Log.e("RxError", "Fetch Network Error: " + t.getMessage());
+                    Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
