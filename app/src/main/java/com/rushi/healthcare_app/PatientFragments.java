@@ -79,6 +79,15 @@ public class PatientFragments {
             android.widget.RadioGroup radioGroup = bottomSheetView.findViewById(R.id.radioGroupStatus);
             android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveCondition);
 
+            // Add DatePicker logic here
+            inputDate.setOnClickListener(v -> {
+                java.util.Calendar calendar = java.util.Calendar.getInstance();
+                new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                    String selectedDate = String.format(java.util.Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    inputDate.setText(selectedDate);
+                }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
+            });
+
             btnSave.setOnClickListener(v -> {
                 String conditionName = inputName.getText().toString().trim();
                 String diagnosisDate = inputDate.getText().toString().trim();
@@ -114,7 +123,14 @@ public class PatientFragments {
                         dialog.dismiss();
                         fetchOverviewData(); // Refresh list immediately
                     } else {
-                        Toast.makeText(getContext(), "Failed to add condition", Toast.LENGTH_SHORT).show();
+                        // Print exact server error instead of generic message
+                        try {
+                            String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown Error";
+                            android.util.Log.e("OverviewFragment", "Failed to add: " + errorMsg);
+                            Toast.makeText(getContext(), "Failed: " + errorMsg, Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -135,15 +151,6 @@ public class PatientFragments {
                         if (history != null) {
                             adapter = new com.rushi.healthcare_app.adapters.HistoryAdapter(history);
                             recyclerView.setAdapter(adapter);
-                        }
-                    }
-                    else {
-                        // Add this log to see why the server rejected the request
-                        android.util.Log.e("API_ERROR", "Response Error Code: " + response.code());
-                        try {
-                            android.util.Log.e("API_ERROR", "Response Error Body: " + response.errorBody().string());
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
                     }
                 }
