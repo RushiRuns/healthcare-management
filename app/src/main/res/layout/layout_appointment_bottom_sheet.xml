@@ -4,10 +4,10 @@
     android:id="@+id/bottomSheetLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/nav_item_background"
-    android:backgroundTint="@color/bottom_sheet_bg"
     android:orientation="vertical"
-    android:padding="24dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="32dp"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -16,53 +16,67 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Patient Name -->
     <TextView
         android:id="@+id/sheetPatientName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Patient Overview"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary" />
+        android:textAppearance="?attr/textAppearanceHeadlineSmall"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="20dp" />
 
+    <!-- Allergies label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Allergies"
-        android:textStyle="bold"
-        android:textColor="@color/text_secondary" />
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_marginBottom="4dp" />
 
+    <!-- Allergies value -->
     <TextView
         android:id="@+id/sheetAllergies"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:text="Loading..."
-        android:textColor="@color/text_primary" />
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="16dp" />
 
+    <!-- Divider -->
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:dividerColor="?attr/colorOutlineVariant" />
+
+    <!-- Conditions label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Conditions"
-        android:textStyle="bold"
-        android:textColor="@color/text_secondary" />
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_marginBottom="4dp" />
 
+    <!-- Conditions value -->
     <TextView
         android:id="@+id/sheetConditions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:text="Loading..."
-        android:textColor="@color/text_primary" />
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="28dp" />
 
+    <!-- Open Full Record button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOpenFullRecord"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_marginTop="32dp"
         android:text="Open Full Record"
-        app:cornerRadius="28dp" />
+        app:cornerRadius="12dp" />
 
 </LinearLayout>
