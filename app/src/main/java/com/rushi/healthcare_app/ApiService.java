@@ -32,7 +32,7 @@ public interface ApiService {
     @GET("vitals/index.php")
     Call<VitalSignResponse> getVitals(@Query("patient_id") String patientId);
 
-    @GET("notes/index.php")
+    @GET("notes/get.php")
     Call<ConsultationNoteResponse> getNotes(@Query("patient_id") String patientId);
 
     @POST("medical_history/add.php")
@@ -64,4 +64,7 @@ public interface ApiService {
 
     @retrofit2.http.POST("prescriptions/delete.php")
     retrofit2.Call<Void> deletePrescription(@retrofit2.http.Body java.util.HashMap<String, String> data);
+
+    @POST("notes/add.php")
+    Call<Void> addNote(@Body java.util.HashMap<String, Object> data);
 }

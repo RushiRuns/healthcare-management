@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    app:cardBackgroundColor="@color/patient_notes_bg"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="6dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
-    app:strokeColor="#FDE047"
-    app:strokeWidth="1dp">
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,60 +19,93 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_calendar" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tvNoteDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFollowUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Date"
-                android:textColor="@color/patient_notes_text"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                app:chipMinHeight="24dp"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="12dp"
-            android:background="#FDE047" />
+            android:background="#EEEEEE"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SYMPTOMS"
-            android:textColor="@color/patient_notes_text"
+            android:text="Diagnosis"
             android:textSize="12sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="#888888"/>
+        <TextView
+            android:id="@+id/tvDiagnosis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textSize="15sp"
+            android:textColor="#333333"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Symptoms"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#888888"/>
         <TextView
             android:id="@+id/tvSymptoms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Symptoms text"
-            android:textColor="@color/patient_text_primary" />
+            android:layout_marginBottom="8dp"
+            android:textSize="14sp"
+            android:textColor="#555555"/>
+
+        <TextView
+            android:id="@+id/labelObservations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Observations"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#888888"/>
+        <TextView
+            android:id="@+id/tvObservations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textSize="14sp"
+            android:textColor="#555555"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="PLAN"
-            android:textColor="@color/patient_notes_text"
+            android:text="Treatment Plan"
             android:textSize="12sp"
-            android:textStyle="bold" />
-
+            android:textStyle="bold"
+            android:textColor="#888888"/>
         <TextView
             android:id="@+id/tvPlan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Plan text"
-            android:textColor="@color/patient_text_primary" />
+            android:textSize="14sp"
+            android:textColor="#555555"/>
+
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

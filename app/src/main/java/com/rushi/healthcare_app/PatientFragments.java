@@ -538,8 +538,21 @@ public class PatientFragments {
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             Log.d("PatientFrag", "NotesFragment created with patientId: " + patientId);
+
             recyclerView = view.findViewById(R.id.recyclerViewNotes);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            android.widget.Button btnAddNote = view.findViewById(R.id.btnAddNote);
+            btnAddNote.setOnClickListener(v -> {
+                ConsultationNoteBottomSheet bottomSheet = new ConsultationNoteBottomSheet();
+                // Pass the patientId to the bottom sheet if needed later
+                Bundle args = new Bundle();
+                args.putString("PATIENT_ID", patientId);
+                bottomSheet.setArguments(args);
+
+                bottomSheet.show(getParentFragmentManager(), "ConsultationNoteBottomSheet");
+            });
+
             fetchNotes();
         }
 
@@ -556,7 +569,8 @@ public class PatientFragments {
                 @Override
                 public void onFailure(Call<ConsultationNoteResponse> call, Throwable t) {
                     if (getContext() != null) {
-                        Toast.makeText(getContext(), "Failed to load notes", Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(getContext(), "Error: " + t.getMessage(), android.widget.Toast.LENGTH_LONG).show();
+                        android.util.Log.e("NotesFragment", "Fetch Error", t);
                     }
                 }
             });
