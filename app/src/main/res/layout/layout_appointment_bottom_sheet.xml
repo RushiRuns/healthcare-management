@@ -7,7 +7,11 @@
     android:orientation="vertical"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
+    android:paddingTop="8dp"
     android:paddingBottom="32dp"
+    android:background="@drawable/bg_bottom_sheet"
+    android:backgroundTint="?attr/colorSurfaceContainer"
+    android:elevation="4dp"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
