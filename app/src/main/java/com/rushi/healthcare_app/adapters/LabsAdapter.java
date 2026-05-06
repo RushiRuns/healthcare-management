@@ -4,8 +4,9 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.color.MaterialColors;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.rushi.healthcare_app.R;
@@ -44,9 +45,9 @@ public class LabsAdapter extends RecyclerView.Adapter<LabsAdapter.LabViewHolder>
         holder.tvRange.setText("Ref Range: " + (record.reference_range != null ? record.reference_range : "N/A"));
 
         if ("abnormal".equalsIgnoreCase(record.status) || "critical".equalsIgnoreCase(record.status)) {
-            holder.tvResult.setTextColor(Color.parseColor("#D32F2F")); // Red for abnormal
+            holder.tvResult.setTextColor(Color.parseColor("#D32F2F"));
         } else {
-            holder.tvResult.setTextColor(Color.parseColor("#4A2E83")); // Standard blue
+            holder.tvResult.setTextColor(MaterialColors.getColor(holder.tvResult, com.google.android.material.R.attr.colorPrimary));
         }
 
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(record));
@@ -60,7 +61,7 @@ public class LabsAdapter extends RecyclerView.Adapter<LabsAdapter.LabViewHolder>
 
     static class LabViewHolder extends RecyclerView.ViewHolder {
         TextView tvTestName, tvDate, tvResult, tvUnit, tvRange;
-        Button btnEdit, btnDelete;
+        MaterialButton btnEdit, btnDelete;
 
         public LabViewHolder(@NonNull View itemView) {
             super(itemView);

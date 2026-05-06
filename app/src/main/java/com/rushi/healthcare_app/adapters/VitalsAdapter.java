@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.google.android.material.button.MaterialButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.rushi.healthcare_app.R;
@@ -52,7 +53,7 @@ public class VitalsAdapter extends RecyclerView.Adapter<VitalsAdapter.VitalsView
 
     static class VitalsViewHolder extends RecyclerView.ViewHolder {
         TextView tvVitalsDate, tvVitalsBp, tvVitalsPulse, tvVitalsTemp, tvVitalsWeight;
-        View btnEditVital, btnDeleteVital;
+        MaterialButton btnEditVital, btnDeleteVital;
 
         public VitalsViewHolder(@NonNull View itemView) {
             super(itemView);
