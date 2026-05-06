@@ -630,6 +630,7 @@ public class PatientFragments {
         private String patientId;
         private RecyclerView recyclerView;
         private VitalsAdapter adapter;
+        private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton btnAddVitals;
 
         public static VitalsFragment newInstance(String patientId) {
             VitalsFragment fragment = new VitalsFragment();
@@ -657,9 +658,81 @@ public class PatientFragments {
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             Log.d("PatientFrag", "VitalsFragment created with patientId: " + patientId);
+
             recyclerView = view.findViewById(R.id.recyclerViewVitals);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            btnAddVitals = view.findViewById(R.id.btnAddVitals);
+            btnAddVitals.setOnClickListener(v -> showAddVitalsBottomSheet());
+
             fetchVitals();
+        }
+
+        private void showAddVitalsBottomSheet() {
+            com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+
+            View bottomSheetView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.bottom_sheet_add_vitals, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            android.widget.EditText inputSys = bottomSheetView.findViewById(R.id.inputSys);
+            android.widget.EditText inputDia = bottomSheetView.findViewById(R.id.inputDia);
+            android.widget.EditText inputHr = bottomSheetView.findViewById(R.id.inputHr);
+            android.widget.EditText inputTemp = bottomSheetView.findViewById(R.id.inputTemp);
+            android.widget.EditText inputWeight = bottomSheetView.findViewById(R.id.inputWeight);
+            android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveVitals);
+
+            btnSave.setOnClickListener(v -> {
+                String sys = inputSys.getText().toString().trim();
+                String dia = inputDia.getText().toString().trim();
+                String hr = inputHr.getText().toString().trim();
+                String temp = inputTemp.getText().toString().trim();
+                String weight = inputWeight.getText().toString().trim();
+
+                if (sys.isEmpty() || dia.isEmpty()) {
+                    Toast.makeText(getContext(), "Blood pressure is required", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                saveVitalsToDatabase(sys, dia, hr, temp, weight, bottomSheetDialog);
+            });
+
+            bottomSheetDialog.show();
+        }
+
+        private void saveVitalsToDatabase(String sys, String dia, String hr, String temp, String weight, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("patient_id", patientId);
+            data.put("bp_sys", sys);
+            data.put("bp_dia", dia);
+            data.put("hr", hr);
+            data.put("temp", temp);
+            data.put("weight", weight);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.addVitals(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Vitals added", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        fetchVitals();
+                    } else {
+                        try {
+                            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                            Toast.makeText(getContext(), "Error: " + errorBody, Toast.LENGTH_LONG).show();
+                            Log.e("VitalsError", "Server Error: " + errorBody);
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Failed to add vitals", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         private void fetchVitals() {
