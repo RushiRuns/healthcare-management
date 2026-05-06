@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.google.android.material.button.MaterialButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.rushi.healthcare_app.R;
@@ -55,7 +56,8 @@ public class RxAdapter extends RecyclerView.Adapter<RxAdapter.RxViewHolder> {
     }
 
     static class RxViewHolder extends RecyclerView.ViewHolder {
-        TextView textMedicationName, textDosage, textFrequency, textDate, btnEdit, btnDelete;
+        TextView textMedicationName, textDosage, textFrequency, textDate;
+        MaterialButton btnEdit, btnDelete;
 
         public RxViewHolder(@NonNull View itemView) {
             super(itemView);
