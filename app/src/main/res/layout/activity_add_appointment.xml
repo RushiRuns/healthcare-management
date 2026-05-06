@@ -3,15 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#121212">
+    android:fitsSystemWindows="true"
+    android:background="?attr/colorSurface">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:title="Schedule Appointment"
-        app:titleTextColor="@android:color/white"
-        app:navigationIconTint="@android:color/white" />
+        app:titleTextColor="?attr/colorOnSurface"
+        app:navigationIconTint="?attr/colorOnSurface" />
 
     <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:padding="16dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
@@ -23,8 +24,8 @@
                     android:id="@+id/searchPatientAuto"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:completionThreshold="0"
-                    android:textColor="@android:color/white"
-                    android:popupBackground="#2A2A2A" />
+                    android:textColor="?attr/colorOnSurface"
+                    android:popupBackground="?attr/colorSurfaceContainer" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

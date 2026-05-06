@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.google.android.material.button.MaterialButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.rushi.healthcare_app.MedicalHistory;
@@ -52,8 +53,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
         TextView tvConditionName;
-        TextView btnEditHistory;
-        TextView btnDeleteHistory;
+        MaterialButton btnEditHistory;
+        MaterialButton btnDeleteHistory;
 
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
