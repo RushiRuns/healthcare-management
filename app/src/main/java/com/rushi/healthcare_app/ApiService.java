@@ -76,4 +76,10 @@ public interface ApiService {
 
     @POST("vitals/add.php")
     Call<Void> addVitals(@Body java.util.HashMap<String, String> data);
+
+    @POST("vitals/update.php")
+    Call<Void> updateVitals(@Body java.util.HashMap<String, String> data);
+
+    @POST("vitals/delete.php")
+    Call<Void> deleteVitals(@Body java.util.HashMap<String, String> data);
 }

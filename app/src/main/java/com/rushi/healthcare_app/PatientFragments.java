@@ -663,12 +663,12 @@ public class PatientFragments {
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
             btnAddVitals = view.findViewById(R.id.btnAddVitals);
-            btnAddVitals.setOnClickListener(v -> showAddVitalsBottomSheet());
+            btnAddVitals.setOnClickListener(v -> showAddVitalsBottomSheet(null));
 
             fetchVitals();
         }
 
-        private void showAddVitalsBottomSheet() {
+        private void showAddVitalsBottomSheet(@Nullable com.rushi.healthcare_app.models.VitalSign existingVital) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
                     new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
 
@@ -683,6 +683,20 @@ public class PatientFragments {
             android.widget.EditText inputWeight = bottomSheetView.findViewById(R.id.inputWeight);
             android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveVitals);
 
+            if (existingVital != null) {
+                if (existingVital.blood_pressure != null && existingVital.blood_pressure.contains("/")) {
+                    String[] bpParts = existingVital.blood_pressure.split("/");
+                    if(bpParts.length == 2) {
+                        inputSys.setText(bpParts[0]);
+                        inputDia.setText(bpParts[1]);
+                    }
+                }
+                inputHr.setText(existingVital.heart_rate);
+                inputTemp.setText(existingVital.temperature);
+                inputWeight.setText(existingVital.weight);
+                btnSave.setText("Update Vitals");
+            }
+
             btnSave.setOnClickListener(v -> {
                 String sys = inputSys.getText().toString().trim();
                 String dia = inputDia.getText().toString().trim();
@@ -690,18 +704,17 @@ public class PatientFragments {
                 String temp = inputTemp.getText().toString().trim();
                 String weight = inputWeight.getText().toString().trim();
 
-                if (sys.isEmpty() || dia.isEmpty()) {
-                    Toast.makeText(getContext(), "Blood pressure is required", Toast.LENGTH_SHORT).show();
-                    return;
+                if (existingVital == null) {
+                    saveVitalsToDatabase(sys, dia, hr, temp, weight, null, bottomSheetDialog);
+                } else {
+                    saveVitalsToDatabase(sys, dia, hr, temp, weight, existingVital.id, bottomSheetDialog);
                 }
-
-                saveVitalsToDatabase(sys, dia, hr, temp, weight, bottomSheetDialog);
             });
 
             bottomSheetDialog.show();
         }
 
-        private void saveVitalsToDatabase(String sys, String dia, String hr, String temp, String weight, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+        private void saveVitalsToDatabase(String sys, String dia, String hr, String temp, String weight, @Nullable String vitalId, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
             java.util.HashMap<String, String> data = new java.util.HashMap<>();
             data.put("patient_id", patientId);
             data.put("bp_sys", sys);
@@ -711,26 +724,51 @@ public class PatientFragments {
             data.put("weight", weight);
 
             ApiService apiService = RetrofitClient.getApiService();
-            apiService.addVitals(data).enqueue(new Callback<Void>() {
+            Call<Void> call;
+
+            if (vitalId == null) {
+                call = apiService.addVitals(data);
+            } else {
+                data.put("vital_id", vitalId);
+                call = apiService.updateVitals(data);
+            }
+
+            call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(getContext(), "Vitals added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), vitalId == null ? "Vitals added" : "Vitals updated", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         fetchVitals();
                     } else {
-                        try {
-                            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                            Toast.makeText(getContext(), "Error: " + errorBody, Toast.LENGTH_LONG).show();
-                            Log.e("VitalsError", "Server Error: " + errorBody);
-                        } catch (Exception e) {
-                            Toast.makeText(getContext(), "Failed to add vitals", Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(getContext(), "Failed to save vitals", Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void deleteVitalsFromDatabase(String vitalId) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("vital_id", vitalId);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.deleteVitals(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Vitals deleted", Toast.LENGTH_SHORT).show();
+                        fetchVitals();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to delete vitals", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -741,7 +779,22 @@ public class PatientFragments {
                 @Override
                 public void onResponse(Call<VitalSignResponse> call, Response<VitalSignResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().records != null) {
-                        adapter = new VitalsAdapter(response.body().records);
+                        adapter = new VitalsAdapter(response.body().records, new VitalsAdapter.OnVitalActionListener() {
+                            @Override
+                            public void onEdit(com.rushi.healthcare_app.models.VitalSign vital) {
+                                showAddVitalsBottomSheet(vital);
+                            }
+
+                            @Override
+                            public void onDelete(com.rushi.healthcare_app.models.VitalSign vital) {
+                                new android.app.AlertDialog.Builder(getContext())
+                                        .setTitle("Delete Vitals")
+                                        .setMessage("Are you sure you want to delete this record?")
+                                        .setPositiveButton("Delete", (dialog, which) -> deleteVitalsFromDatabase(vital.id))
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        });
                         recyclerView.setAdapter(adapter);
                     }
                 }
