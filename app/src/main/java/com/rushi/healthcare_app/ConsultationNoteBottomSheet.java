@@ -16,9 +16,12 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
     private SwitchMaterial switchFollowUp;
     private MaterialButton btnSaveNote;
     private TextView tvPatientContext;
+    private Runnable onSuccessCallback;
 
-    public ConsultationNoteBottomSheet() {
-        // Required empty public constructor
+    public ConsultationNoteBottomSheet() { }
+
+    public void setOnSuccessCallback(Runnable callback) {
+        this.onSuccessCallback = callback;
     }
 
     @Override
@@ -41,12 +44,29 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
             }
         });
 
+        String noteId = getArguments() != null ? getArguments().getString("NOTE_ID", null) : null;
+
+        if (noteId != null) {
+            btnSaveNote.setText("Update Note");
+            tvPatientContext.setText("Edit Consultation Note");
+            etSymptoms.setText(getArguments().getString("SYMPTOMS", ""));
+            etObservations.setText(getArguments().getString("OBSERVATIONS", ""));
+            etDiagnosis.setText(getArguments().getString("DIAGNOSIS", ""));
+            etTreatmentPlan.setText(getArguments().getString("PLAN", ""));
+
+            String followUpReq = getArguments().getString("FOLLOW_UP_REQ", "0");
+            if ("1".equals(followUpReq)) {
+                switchFollowUp.setChecked(true);
+                etFollowUpDays.setEnabled(true);
+                etFollowUpDays.setText(getArguments().getString("FOLLOW_UP_DAYS", ""));
+            }
+        }
+
         btnSaveNote.setOnClickListener(v -> {
             String symptoms = etSymptoms.getText() != null ? etSymptoms.getText().toString().trim() : "";
             String observations = etObservations.getText() != null ? etObservations.getText().toString().trim() : "";
             String diagnosis = etDiagnosis.getText() != null ? etDiagnosis.getText().toString().trim() : "";
             String treatment = etTreatmentPlan.getText() != null ? etTreatmentPlan.getText().toString().trim() : "";
-
             boolean followUpReq = switchFollowUp.isChecked();
             String followUpDays = etFollowUpDays.getText() != null ? etFollowUpDays.getText().toString().trim() : "0";
 
@@ -55,16 +75,7 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
                 return;
             }
 
-            // Get the patient ID that was passed when opening the bottom sheet
-            String patientId = "";
-            if (getArguments() != null) {
-                patientId = getArguments().getString("PATIENT_ID", "");
-            }
-
             java.util.HashMap<String, Object> noteData = new java.util.HashMap<>();
-            noteData.put("patient_id", patientId);
-            // Hardcoding doctor_id to 1 for now assuming single user. Update if you have an Auth/Session manager
-            noteData.put("doctor_id", 1);
             noteData.put("symptoms", symptoms);
             noteData.put("observations", observations);
             noteData.put("diagnosis", diagnosis);
@@ -73,25 +84,34 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
             noteData.put("follow_up_days", followUpDays.isEmpty() ? 0 : Integer.parseInt(followUpDays));
 
             ApiService apiService = RetrofitClient.getApiService();
-            apiService.addNote(noteData).enqueue(new retrofit2.Callback<Void>() {
+            retrofit2.Call<Void> call;
+
+            if (noteId != null) {
+                noteData.put("note_id", noteId);
+                call = apiService.updateNote(noteData);
+            } else {
+                noteData.put("patient_id", getArguments() != null ? getArguments().getString("PATIENT_ID", "") : "");
+                noteData.put("doctor_id", 1);
+                call = apiService.addNote(noteData);
+            }
+
+            call.enqueue(new retrofit2.Callback<Void>() {
                 @Override
                 public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
                     if (response.isSuccessful()) {
-                        android.widget.Toast.makeText(getContext(), "Note saved successfully", android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(getContext(), noteId != null ? "Note updated" : "Note saved", android.widget.Toast.LENGTH_SHORT).show();
+                        if (onSuccessCallback != null) onSuccessCallback.run();
                         dismiss();
-                        // Optionally, refresh the list in the Fragment here
                     } else {
                         android.widget.Toast.makeText(getContext(), "Failed to save note", android.widget.Toast.LENGTH_SHORT).show();
                     }
                 }
-
                 @Override
                 public void onFailure(retrofit2.Call<Void> call, Throwable t) {
                     android.widget.Toast.makeText(getContext(), "Error: " + t.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
                 }
             });
         });
-
         return view;
     }
 }

@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.rushi.healthcare_app.R;
 import com.rushi.healthcare_app.models.ConsultationNote;
@@ -13,9 +14,16 @@ import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder> {
     private List<ConsultationNote> notesList;
+    private OnNoteActionListener listener;
 
-    public NotesAdapter(List<ConsultationNote> notesList) {
+    public interface OnNoteActionListener {
+        void onEdit(ConsultationNote note);
+        void onDelete(ConsultationNote note);
+    }
+
+    public NotesAdapter(List<ConsultationNote> notesList, OnNoteActionListener listener) {
         this.notesList = notesList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -49,6 +57,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         } else {
             holder.chipFollowUp.setVisibility(View.GONE);
         }
+
+        holder.btnEditNote.setOnClickListener(v -> listener.onEdit(note));
+        holder.btnDeleteNote.setOnClickListener(v -> listener.onDelete(note));
     }
 
     @Override
@@ -59,6 +70,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     static class NotesViewHolder extends RecyclerView.ViewHolder {
         TextView tvNoteDate, tvSymptoms, tvPlan, tvDiagnosis, tvObservations, labelObservations;
         Chip chipFollowUp;
+        MaterialButton btnEditNote, btnDeleteNote;
 
         public NotesViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +81,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             tvObservations = itemView.findViewById(R.id.tvObservations);
             labelObservations = itemView.findViewById(R.id.labelObservations);
             chipFollowUp = itemView.findViewById(R.id.chipFollowUp);
+            btnEditNote = itemView.findViewById(R.id.btnEditNote);
+            btnDeleteNote = itemView.findViewById(R.id.btnDeleteNote);
         }
     }
 }

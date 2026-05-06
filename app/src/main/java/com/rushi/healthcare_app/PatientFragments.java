@@ -543,17 +543,29 @@ public class PatientFragments {
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
             android.widget.Button btnAddNote = view.findViewById(R.id.btnAddNote);
-            btnAddNote.setOnClickListener(v -> {
-                ConsultationNoteBottomSheet bottomSheet = new ConsultationNoteBottomSheet();
-                // Pass the patientId to the bottom sheet if needed later
-                Bundle args = new Bundle();
-                args.putString("PATIENT_ID", patientId);
-                bottomSheet.setArguments(args);
-
-                bottomSheet.show(getParentFragmentManager(), "ConsultationNoteBottomSheet");
-            });
+            btnAddNote.setOnClickListener(v -> showNoteBottomSheet(null));
 
             fetchNotes();
+        }
+
+        private void showNoteBottomSheet(@Nullable com.rushi.healthcare_app.models.ConsultationNote existingNote) {
+            ConsultationNoteBottomSheet bottomSheet = new ConsultationNoteBottomSheet();
+            Bundle args = new Bundle();
+            args.putString("PATIENT_ID", patientId);
+
+            if (existingNote != null) {
+                args.putString("NOTE_ID", existingNote.id);
+                args.putString("SYMPTOMS", existingNote.symptoms);
+                args.putString("OBSERVATIONS", existingNote.observations);
+                args.putString("DIAGNOSIS", existingNote.diagnosis);
+                args.putString("PLAN", existingNote.plan);
+                args.putString("FOLLOW_UP_REQ", existingNote.follow_up_required);
+                args.putString("FOLLOW_UP_DAYS", existingNote.follow_up_days);
+            }
+
+            bottomSheet.setArguments(args);
+            bottomSheet.setOnSuccessCallback(this::fetchNotes);
+            bottomSheet.show(getParentFragmentManager(), "ConsultationNoteBottomSheet");
         }
 
         private void fetchNotes() {
@@ -562,16 +574,53 @@ public class PatientFragments {
                 @Override
                 public void onResponse(Call<ConsultationNoteResponse> call, Response<ConsultationNoteResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().records != null) {
-                        adapter = new NotesAdapter(response.body().records);
+                        adapter = new NotesAdapter(response.body().records, new NotesAdapter.OnNoteActionListener() {
+                            @Override
+                            public void onEdit(com.rushi.healthcare_app.models.ConsultationNote note) {
+                                showNoteBottomSheet(note);
+                            }
+
+                            @Override
+                            public void onDelete(com.rushi.healthcare_app.models.ConsultationNote note) {
+                                new android.app.AlertDialog.Builder(getContext())
+                                        .setTitle("Delete Note")
+                                        .setMessage("Are you sure you want to delete this consultation note?")
+                                        .setPositiveButton("Delete", (dialog, which) -> deleteNoteFromDatabase(note.id))
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        });
                         recyclerView.setAdapter(adapter);
                     }
                 }
                 @Override
                 public void onFailure(Call<ConsultationNoteResponse> call, Throwable t) {
                     if (getContext() != null) {
-                        android.widget.Toast.makeText(getContext(), "Error: " + t.getMessage(), android.widget.Toast.LENGTH_LONG).show();
-                        android.util.Log.e("NotesFragment", "Fetch Error", t);
+                        Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.e("NotesFragment", "Fetch Error", t);
                     }
+                }
+            });
+        }
+
+        private void deleteNoteFromDatabase(String noteId) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("note_id", noteId);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.deleteNote(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Note deleted", Toast.LENGTH_SHORT).show();
+                        fetchNotes();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to delete note", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }

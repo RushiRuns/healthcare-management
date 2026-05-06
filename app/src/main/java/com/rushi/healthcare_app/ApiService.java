@@ -67,4 +67,10 @@ public interface ApiService {
 
     @POST("notes/add.php")
     Call<Void> addNote(@Body java.util.HashMap<String, Object> data);
+
+    @POST("notes/update.php")
+    Call<Void> updateNote(@Body java.util.HashMap<String, Object> data);
+
+    @POST("notes/delete.php")
+    Call<Void> deleteNote(@Body java.util.HashMap<String, String> data);
 }
