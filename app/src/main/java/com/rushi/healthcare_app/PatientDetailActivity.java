@@ -67,6 +67,7 @@ public class PatientDetailActivity extends AppCompatActivity {
                 case 1: tab.setText("Rx"); break;
                 case 2: tab.setText("Notes"); break;
                 case 3: tab.setText("Vitals"); break;
+                case 4: tab.setText("Labs"); break;
             }
         }).attach();
 

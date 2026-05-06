@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
@@ -16,6 +18,8 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
     private SwitchMaterial switchFollowUp;
     private MaterialButton btnSaveNote;
     private TextView tvPatientContext;
+    private LinearLayout llFollowUpStatus;
+    private RadioGroup rgFollowUpStatus;
     private Runnable onSuccessCallback;
 
     public ConsultationNoteBottomSheet() { }
@@ -36,9 +40,12 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
         switchFollowUp = view.findViewById(R.id.switch_follow_up);
         etFollowUpDays = view.findViewById(R.id.et_follow_up_days);
         btnSaveNote = view.findViewById(R.id.btn_save_note);
+        llFollowUpStatus = view.findViewById(R.id.ll_follow_up_status);
+        rgFollowUpStatus = view.findViewById(R.id.rg_follow_up_status);
 
         switchFollowUp.setOnCheckedChangeListener((buttonView, isChecked) -> {
             etFollowUpDays.setEnabled(isChecked);
+            llFollowUpStatus.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             if (!isChecked) {
                 etFollowUpDays.setText("");
             }
@@ -59,6 +66,17 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
                 switchFollowUp.setChecked(true);
                 etFollowUpDays.setEnabled(true);
                 etFollowUpDays.setText(getArguments().getString("FOLLOW_UP_DAYS", ""));
+                llFollowUpStatus.setVisibility(View.VISIBLE);
+
+                // Set the correct radio button
+                String status = getArguments().getString("FOLLOW_UP_STATUS", "pending");
+                if ("completed".equalsIgnoreCase(status)) {
+                    rgFollowUpStatus.check(R.id.rb_completed);
+                } else if ("cancelled".equalsIgnoreCase(status)) {
+                    rgFollowUpStatus.check(R.id.rb_cancelled);
+                } else {
+                    rgFollowUpStatus.check(R.id.rb_pending);
+                }
             }
         }
 
@@ -75,6 +93,13 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
                 return;
             }
 
+            String status = "pending";
+            if (followUpReq) {
+                int selectedId = rgFollowUpStatus.getCheckedRadioButtonId();
+                if (selectedId == R.id.rb_completed) status = "completed";
+                else if (selectedId == R.id.rb_cancelled) status = "cancelled";
+            }
+
             java.util.HashMap<String, Object> noteData = new java.util.HashMap<>();
             noteData.put("symptoms", symptoms);
             noteData.put("observations", observations);
@@ -82,6 +107,8 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
             noteData.put("treatment_plan", treatment);
             noteData.put("follow_up_required", followUpReq ? 1 : 0);
             noteData.put("follow_up_days", followUpDays.isEmpty() ? 0 : Integer.parseInt(followUpDays));
+            noteData.put("follow_up_status", status);
+            noteData.put("patient_id", getArguments() != null ? getArguments().getString("PATIENT_ID", "") : "");
 
             ApiService apiService = RetrofitClient.getApiService();
             retrofit2.Call<Void> call;
@@ -90,7 +117,6 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
                 noteData.put("note_id", noteId);
                 call = apiService.updateNote(noteData);
             } else {
-                noteData.put("patient_id", getArguments() != null ? getArguments().getString("PATIENT_ID", "") : "");
                 noteData.put("doctor_id", 1);
                 call = apiService.addNote(noteData);
             }

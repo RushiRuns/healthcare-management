@@ -22,12 +22,13 @@ public class PatientPagerAdapter extends FragmentStateAdapter {
             case 1: return PatientFragments.RxFragment.newInstance(patientId);
             case 2: return PatientFragments.NotesFragment.newInstance(patientId);
             case 3: return PatientFragments.VitalsFragment.newInstance(patientId);
+            case 4: return PatientFragments.LabsFragment.newInstance(patientId);
             default: return PatientFragments.OverviewFragment.newInstance(patientId);
         }
     }
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 5;
     }
 }

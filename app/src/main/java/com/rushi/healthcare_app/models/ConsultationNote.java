@@ -30,4 +30,7 @@ public class ConsultationNote {
 
     @SerializedName("follow_up_days")
     public String follow_up_days;
+
+    @SerializedName("follow_up_status")
+    public String follow_up_status;
 }

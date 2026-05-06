@@ -82,4 +82,22 @@ public interface ApiService {
 
     @POST("vitals/delete.php")
     Call<Void> deleteVitals(@Body java.util.HashMap<String, String> data);
+
+    @GET("labs/get.php")
+    Call<com.rushi.healthcare_app.models.LabResponse> getLabs(@Query("patient_id") String patientId);
+
+    @POST("labs/add.php")
+    Call<Void> addLab(@Body java.util.HashMap<String, String> data);
+
+    @POST("labs/update.php")
+    Call<Void> updateLab(@Body java.util.HashMap<String, String> data);
+
+    @POST("labs/delete.php")
+    Call<Void> deleteLab(@Body java.util.HashMap<String, String> data);
+
+    @GET("dashboard/stats.php")
+    Call<DashboardStatsResponse> getDashboardStats();
+
+    @POST("followups/update_status.php")
+    Call<GenericResponse> updateFollowUpStatus(@Body UpdateFollowUpRequest request);
 }

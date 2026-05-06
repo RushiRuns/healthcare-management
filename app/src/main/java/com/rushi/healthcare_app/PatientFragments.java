@@ -561,6 +561,7 @@ public class PatientFragments {
                 args.putString("PLAN", existingNote.plan);
                 args.putString("FOLLOW_UP_REQ", existingNote.follow_up_required);
                 args.putString("FOLLOW_UP_DAYS", existingNote.follow_up_days);
+                args.putString("FOLLOW_UP_STATUS", existingNote.follow_up_status); // Added this line
             }
 
             bottomSheet.setArguments(args);
@@ -803,6 +804,206 @@ public class PatientFragments {
                     if (getContext() != null) {
                         Toast.makeText(getContext(), "Failed to load vitals", Toast.LENGTH_SHORT).show();
                     }
+                }
+            });
+        }
+    }
+
+    public static class LabsFragment extends Fragment {
+        private String patientId;
+        private RecyclerView recyclerView;
+        private com.rushi.healthcare_app.adapters.LabsAdapter adapter;
+
+        public static LabsFragment newInstance(String patientId) {
+            LabsFragment fragment = new LabsFragment();
+            Bundle args = new Bundle();
+            args.putString("PATIENT_ID", patientId);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                patientId = getArguments().getString("PATIENT_ID");
+            }
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_labs, container, false);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+
+            recyclerView = view.findViewById(R.id.recyclerViewLabs);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton btnAddLab = view.findViewById(R.id.btnAddLab);
+            btnAddLab.setOnClickListener(v -> showAddLabBottomSheet(null));
+
+            fetchLabs();
+        }
+
+        private void showAddLabBottomSheet(@Nullable com.rushi.healthcare_app.models.LabRecord existingRecord) {
+            com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+
+            View bottomSheetView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.bottom_sheet_add_lab, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            android.widget.TextView sheetTitle = bottomSheetView.findViewById(R.id.textLabSheetTitle);
+            android.widget.EditText inputName = bottomSheetView.findViewById(R.id.inputTestName);
+            android.widget.EditText inputDate = bottomSheetView.findViewById(R.id.inputTestDate);
+            android.widget.EditText inputResult = bottomSheetView.findViewById(R.id.inputResultValue);
+            android.widget.EditText inputUnit = bottomSheetView.findViewById(R.id.inputUnit);
+            android.widget.EditText inputRange = bottomSheetView.findViewById(R.id.inputReferenceRange);
+            android.widget.RadioGroup radioGroup = bottomSheetView.findViewById(R.id.radioGroupLabStatus);
+            android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveLab);
+
+            if (existingRecord != null) {
+                sheetTitle.setText("Update Lab Result");
+                inputName.setText(existingRecord.test_name);
+                inputDate.setText(existingRecord.test_date);
+                inputResult.setText(existingRecord.result_value);
+                inputUnit.setText(existingRecord.unit);
+                inputRange.setText(existingRecord.reference_range);
+
+                if ("abnormal".equalsIgnoreCase(existingRecord.status)) {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioAbnormal)).setChecked(true);
+                } else if ("critical".equalsIgnoreCase(existingRecord.status)) {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioCritical)).setChecked(true);
+                } else {
+                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioNormal)).setChecked(true);
+                }
+                btnSave.setText("Update Result");
+            }
+
+            inputDate.setOnClickListener(v -> {
+                java.util.Calendar calendar = java.util.Calendar.getInstance();
+                new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                    String selectedDate = String.format(java.util.Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    inputDate.setText(selectedDate);
+                }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
+            });
+
+            btnSave.setOnClickListener(v -> {
+                String name = inputName.getText().toString().trim();
+                String date = inputDate.getText().toString().trim();
+                String result = inputResult.getText().toString().trim();
+                String unit = inputUnit.getText().toString().trim();
+                String range = inputRange.getText().toString().trim();
+
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                android.widget.RadioButton selectedRadio = bottomSheetView.findViewById(selectedId);
+                String status = selectedRadio.getText().toString().toLowerCase();
+
+                if (name.isEmpty() || date.isEmpty()) {
+                    Toast.makeText(getContext(), "Please fill in Test Name and Date", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (existingRecord == null) {
+                    saveLabToDatabase(null, name, date, result, unit, range, status, bottomSheetDialog);
+                } else {
+                    saveLabToDatabase(existingRecord.lab_result_id, name, date, result, unit, range, status, bottomSheetDialog);
+                }
+            });
+
+            bottomSheetDialog.show();
+        }
+
+        private void saveLabToDatabase(@Nullable String labId, String name, String date, String result, String unit, String range, String status, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("patient_id", patientId);
+            data.put("test_name", name);
+            data.put("test_date", date);
+            data.put("result_value", result);
+            data.put("unit", unit);
+            data.put("reference_range", range);
+            data.put("status", status);
+
+            ApiService apiService = RetrofitClient.getApiService();
+            Call<Void> call;
+
+            if (labId == null) {
+                call = apiService.addLab(data);
+            } else {
+                data.put("lab_result_id", labId);
+                call = apiService.updateLab(data);
+            }
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), labId == null ? "Lab saved" : "Lab updated", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        fetchLabs();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to save", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void deleteLabFromDatabase(String labId) {
+            java.util.HashMap<String, String> data = new java.util.HashMap<>();
+            data.put("lab_result_id", labId);
+
+            RetrofitClient.getApiService().deleteLab(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Lab deleted", Toast.LENGTH_SHORT).show();
+                        fetchLabs();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to delete", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void fetchLabs() {
+            RetrofitClient.getApiService().getLabs(patientId).enqueue(new Callback<com.rushi.healthcare_app.models.LabResponse>() {
+                @Override
+                public void onResponse(Call<com.rushi.healthcare_app.models.LabResponse> call, Response<com.rushi.healthcare_app.models.LabResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().records != null) {
+                        adapter = new com.rushi.healthcare_app.adapters.LabsAdapter(response.body().records, new com.rushi.healthcare_app.adapters.LabsAdapter.OnLabActionListener() {
+                            @Override
+                            public void onEdit(com.rushi.healthcare_app.models.LabRecord record) {
+                                showAddLabBottomSheet(record);
+                            }
+
+                            @Override
+                            public void onDelete(com.rushi.healthcare_app.models.LabRecord record) {
+                                new android.app.AlertDialog.Builder(getContext())
+                                        .setTitle("Delete Lab Result")
+                                        .setMessage("Are you sure you want to delete this record?")
+                                        .setPositiveButton("Delete", (dialog, which) -> deleteLabFromDatabase(record.lab_result_id))
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        });
+                        recyclerView.setAdapter(adapter);
+                    }
+                }
+                @Override
+                public void onFailure(Call<com.rushi.healthcare_app.models.LabResponse> call, Throwable t) {
+                    Log.e("LabsFragment", "Fetch Error", t);
                 }
             });
         }

@@ -2,10 +2,14 @@ package com.rushi.healthcare_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import com.rushi.healthcare_app.databinding.ActivityDashboardBinding;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -61,6 +65,38 @@ public class DashboardActivity extends AppCompatActivity {
                     setEnabled(false);
                     getOnBackPressedDispatcher().onBackPressed();
                 }
+            }
+        });
+
+        fetchDashboardStats();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh the stats when the user comes back to the dashboard
+        fetchDashboardStats();
+    }
+
+    private void fetchDashboardStats() {
+        ApiService apiService = RetrofitClient.getApiService();
+        Call<DashboardStatsResponse> call = apiService.getDashboardStats();
+
+        call.enqueue(new Callback<DashboardStatsResponse>() {
+            @Override
+            public void onResponse(Call<DashboardStatsResponse> call, Response<DashboardStatsResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    binding.tvTodaysAppointments.setText(String.valueOf(response.body().getTodaysAppointments()));
+                    binding.tvNewPatients.setText(String.valueOf(response.body().getNewPatients()));
+                    binding.tvPendingFollowUps.setText(String.valueOf(response.body().getPendingFollowups()));
+                } else {
+                    Toast.makeText(DashboardActivity.this, "Failed to load dashboard statistics", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DashboardStatsResponse> call, Throwable t) {
+                Toast.makeText(DashboardActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
