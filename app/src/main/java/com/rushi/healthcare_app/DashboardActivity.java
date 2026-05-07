@@ -33,6 +33,12 @@ public class DashboardActivity extends AppCompatActivity {
         binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Set sidebar width to 70% of screen width
+        android.view.View sidebar = (android.view.View) binding.navigationView.getParent();
+        android.view.ViewGroup.LayoutParams params = sidebar.getLayoutParams();
+        params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.7f);
+        sidebar.setLayoutParams(params);
+
         binding.navigationView.setCheckedItem(R.id.nav_dashboard);
 
         binding.btnSignOut.setOnClickListener(v -> {

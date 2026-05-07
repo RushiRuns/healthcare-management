@@ -51,6 +51,12 @@ public class PatientsActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Set sidebar width to 70% of screen width
+        android.view.View sidebar = (android.view.View) navigationView.getParent();
+        android.view.ViewGroup.LayoutParams params = sidebar.getLayoutParams();
+        params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.7f);
+        sidebar.setLayoutParams(params);
+
         navigationView.setCheckedItem(R.id.nav_patients);
 
         navigationView.setNavigationItemSelectedListener(item -> {

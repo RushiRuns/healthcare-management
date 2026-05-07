@@ -1,61 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="?attr/colorSurface">
+    android:background="#F5F7F9">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="#FFFFFF"
         app:title="Schedule Appointment"
-        app:titleTextColor="?attr/colorOnSurface"
-        app:navigationIconTint="?attr/colorOnSurface" />
+        app:titleTextColor="#1A2535"
+        app:navigationIconTint="#1A2535" />
 
-    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:padding="16dp">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E8F0" />
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:padding="20dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Select Patient" app:startIconDrawable="@android:drawable/ic_menu_search">
+                android:hint="Select Patient"
+                android:textColorHint="#64748B"
+                app:startIconDrawable="@android:drawable/ic_menu_search"
+                app:startIconTint="#64748B"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#E2E8F0"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:hintTextColor="#185FA5">
                 <AutoCompleteTextView
                     android:id="@+id/searchPatientAuto"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:completionThreshold="0"
-                    android:textColor="?attr/colorOnSurface"
-                    android:popupBackground="?attr/colorSurfaceContainer" />
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="#1A2535"
+                    android:popupBackground="#FFFFFF" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:hint="Date">
+                android:layout_marginTop="16dp" android:hint="Date"
+                android:textColorHint="#64748B"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#E2E8F0"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:hintTextColor="#185FA5">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editDate" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:focusable="false" />
+                    android:layout_height="wrap_content" android:focusable="false"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="#1A2535" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:hint="Time">
+                android:layout_marginTop="16dp" android:hint="Time"
+                android:textColorHint="#64748B"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#E2E8F0"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:hintTextColor="#185FA5">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTime" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:focusable="false" />
+                    android:layout_height="wrap_content" android:focusable="false"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="#1A2535" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:hint="Reason for Visit">
+                android:layout_marginTop="16dp" android:hint="Reason for Visit"
+                android:textColorHint="#64748B"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#E2E8F0"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:hintTextColor="#185FA5">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editReason" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="#1A2535" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSchedule"
-                android:layout_width="match_parent" android:layout_height="60dp"
+                android:layout_width="match_parent" android:layout_height="48dp"
                 android:layout_marginTop="32dp" android:text="Schedule Now"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#185FA5"
+                app:elevation="0dp"
                 app:cornerRadius="8dp"/>
 
         </LinearLayout>

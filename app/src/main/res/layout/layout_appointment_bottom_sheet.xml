@@ -9,9 +9,8 @@
     android:paddingEnd="24dp"
     android:paddingTop="8dp"
     android:paddingBottom="32dp"
-    android:background="@drawable/bg_bottom_sheet"
-    android:backgroundTint="?attr/colorSurfaceContainer"
-    android:elevation="4dp"
+    android:background="#FFFFFF"
+    android:elevation="0dp"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -26,8 +25,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Patient Overview"
-        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorOnSurface"
+        android:textSize="24sp"
+        android:textColor="#1A2535"
+        android:fontFamily="sans-serif-medium"
         android:layout_marginBottom="20dp" />
 
     <!-- Allergies label -->
@@ -35,8 +35,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Allergies"
-        android:textAppearance="?attr/textAppearanceLabelLarge"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="11sp"
+        android:textColor="#64748B"
+        android:fontFamily="sans-serif"
         android:layout_marginBottom="4dp" />
 
     <!-- Allergies value -->
@@ -45,24 +46,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Loading..."
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textColor="?attr/colorOnSurface"
+        android:textSize="13sp"
+        android:textColor="#1A2535"
+        android:fontFamily="sans-serif"
         android:layout_marginBottom="16dp" />
 
     <!-- Divider -->
-    <com.google.android.material.divider.MaterialDivider
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
         android:layout_marginBottom="16dp"
-        app:dividerColor="?attr/colorOutlineVariant" />
+        android:background="#E2E8F0" />
 
     <!-- Conditions label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Conditions"
-        android:textAppearance="?attr/textAppearanceLabelLarge"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="11sp"
+        android:textColor="#64748B"
+        android:fontFamily="sans-serif"
         android:layout_marginBottom="4dp" />
 
     <!-- Conditions value -->
@@ -71,16 +74,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Loading..."
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textColor="?attr/colorOnSurface"
+        android:textSize="13sp"
+        android:textColor="#1A2535"
+        android:fontFamily="sans-serif"
         android:layout_marginBottom="28dp" />
 
     <!-- Open Full Record button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOpenFullRecord"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="48dp"
         android:text="Open Full Record"
-        app:cornerRadius="12dp" />
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-medium"
+        app:backgroundTint="#185FA5"
+        app:elevation="0dp"
+        app:cornerRadius="8dp" />
 
 </LinearLayout>

@@ -96,7 +96,7 @@ public class PatientDetailActivity extends AppCompatActivity {
         // DatePicker for DOB
         etDOB.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-            new DatePickerDialog(this, (view1, year, month, dayOfMonth) -> {
+            new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog, (view1, year, month, dayOfMonth) -> {
                 String selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                 etDOB.setText(selectedDate);
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();

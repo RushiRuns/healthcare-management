@@ -4,15 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#F5F7F9">
 
-    <!-- M3 Toolbar -->
+    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="#FFFFFF"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="Patient Name">
+        app:navigationIconTint="#1A2535"
+        app:title="Patient Name"
+        app:titleTextColor="#1A2535">
 
         <ImageView
             android:id="@+id/btnToolbarEdit"
@@ -22,9 +26,14 @@
             android:padding="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_edit_24"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="#64748B" />
 
     </com.google.android.material.appbar.MaterialToolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E8F0" />
 
     <!-- Patient Header Card -->
     <com.google.android.material.card.MaterialCardView
@@ -34,9 +43,11 @@
         android:layout_marginEnd="12dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="4dp"
-        app:cardElevation="2dp"
-        app:cardCornerRadius="16dp"
-        app:strokeWidth="0dp">
+        app:cardElevation="0dp"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:strokeColor="#E2E8F0"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,14 +65,15 @@
                 <!-- Avatar circle -->
                 <TextView
                     android:id="@+id/avatar"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="@drawable/circle_avatar_bg"
+                    android:backgroundTint="#E2E8F0"
                     android:gravity="center"
                     android:text="P"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textColor="#1A2535"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <!-- ID + Demographics + Phone -->
                 <LinearLayout
@@ -76,16 +88,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="PT-0000"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#1A2535" />
 
                     <TextView
                         android:id="@+id/patientDemographics"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Age • Gender"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif"
+                        android:textColor="#64748B"
                         android:layout_marginTop="2dp" />
 
                     <LinearLayout
@@ -97,10 +111,10 @@
 
                         <ImageView
                             android:id="@+id/phoneIcon"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
                             android:src="@drawable/ic_phone"
-                            app:tint="?attr/colorOnSurfaceVariant" />
+                            app:tint="#64748B" />
 
                         <TextView
                             android:id="@+id/patientPhone"
@@ -108,8 +122,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
                             android:text="Phone Number"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif"
+                            android:textColor="#64748B" />
 
                     </LinearLayout>
 
@@ -121,21 +136,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Type"
-                    android:textAppearance="?attr/textAppearanceLabelLarge"
-                    app:chipBackgroundColor="?attr/colorErrorContainer"
-                    android:textColor="?attr/colorOnErrorContainer"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-medium"
+                    app:chipBackgroundColor="#FEE2E2"
+                    android:textColor="#EF4444"
                     app:chipStrokeWidth="0dp"
                     app:ensureMinTouchTargetSize="false" />
 
             </LinearLayout>
 
             <!-- Divider -->
-            <com.google.android.material.divider.MaterialDivider
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="1dp"
                 android:layout_marginTop="14dp"
                 android:layout_marginBottom="12dp"
-                app:dividerColor="?attr/colorOutlineVariant" />
+                android:background="#E2E8F0" />
 
             <!-- Allergies row -->
             <LinearLayout
@@ -152,18 +168,19 @@
 
                     <ImageView
                         android:id="@+id/alertIcon"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_alert"
-                        app:tint="?attr/colorError" />
+                        app:tint="#EF4444" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:text="ALLERGIES"
-                        android:textAppearance="?attr/textAppearanceLabelMedium"
-                        android:textColor="?attr/colorError"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#EF4444"
                         android:letterSpacing="0.08" />
 
                 </LinearLayout>
@@ -172,10 +189,11 @@
                     android:id="@+id/patientAllergies"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="22dp"
                     android:text="None"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="#64748B" />
 
             </LinearLayout>
 
@@ -183,11 +201,15 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- M3 Tab Layout -->
+    <!-- Tab Layout -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:tabIndicatorColor="#185FA5"
+        app:tabSelectedTextColor="#185FA5"
+        app:tabTextColor="#64748B"
         app:tabMode="fixed" />
 
     <androidx.viewpager2.widget.ViewPager2

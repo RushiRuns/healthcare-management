@@ -19,8 +19,8 @@
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"
-            android:background="?attr/colorOutlineVariant"
-            android:backgroundTint="?attr/colorOutlineVariant" />
+            android:background="#E2E8F0"
+            android:backgroundTint="#E2E8F0" />
 
         <!-- Title / Patient context -->
         <TextView
@@ -28,13 +28,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Patient: [Name] | ID: [ID]"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#1A2535"
             android:layout_marginBottom="24dp" />
 
         <!-- Symptoms -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -51,7 +61,16 @@
 
         <!-- Observations -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -68,7 +87,16 @@
 
         <!-- Diagnosis -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -78,13 +106,25 @@
                 android:id="@+id/et_diagnosis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Treatment Plan -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -115,7 +155,16 @@
                 android:text="Require Follow-up" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:hint="Days">
@@ -144,8 +193,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Follow-up Status"
-                android:textAppearance="?attr/textAppearanceLabelLarge"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+                android:textColor="#64748B"
                 android:layout_marginBottom="8dp" />
 
             <RadioGroup
@@ -184,9 +234,14 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save_note"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:text="Save Note"
-            app:cornerRadius="12dp" />
+            app:cornerRadius="8dp"
+            app:elevation="0dp"
+            app:backgroundTint="#185FA5"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium" />
 
     </LinearLayout>
 

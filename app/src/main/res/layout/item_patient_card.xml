@@ -5,9 +5,11 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="6dp"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="12dp"
-    app:strokeWidth="0dp">
+    app:cardElevation="0dp"
+    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:strokeColor="#E2E8F0"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,15 +22,15 @@
         <!-- Avatar -->
         <TextView
             android:id="@+id/textAvatar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:background="@drawable/bg_circle_avatar"
-            android:backgroundTint="?attr/colorPrimaryContainer"
+            android:backgroundTint="#E2E8F0"
             android:gravity="center"
             android:text="R"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textColor="#1A2535"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-medium" />
 
         <!-- Info -->
         <LinearLayout
@@ -44,8 +46,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rahul Sharma"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="15sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif-medium" />
 
             <TextView
                 android:id="@+id/textPatientDetails"
@@ -53,8 +56,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="PT-1001 • 45 yrs"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textSize="13sp"
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
 
         <!-- Arrow -->
@@ -63,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chevron_right"
-            app:tint="?attr/colorOnSurfaceVariant" />
+            app:tint="#64748B" />
 
     </LinearLayout>
 

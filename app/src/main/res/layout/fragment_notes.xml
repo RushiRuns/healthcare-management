@@ -21,6 +21,11 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:text="Add Note"
-        app:icon="@android:drawable/ic_input_add" />
+        app:icon="@android:drawable/ic_input_add" 
+        app:backgroundTint="#185FA5"
+        android:textColor="#FFFFFF"
+        app:iconTint="#FFFFFF"
+        app:elevation="0dp"
+        android:fontFamily="sans-serif-medium" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

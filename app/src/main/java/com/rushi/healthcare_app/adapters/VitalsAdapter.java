@@ -53,7 +53,7 @@ public class VitalsAdapter extends RecyclerView.Adapter<VitalsAdapter.VitalsView
 
     static class VitalsViewHolder extends RecyclerView.ViewHolder {
         TextView tvVitalsDate, tvVitalsBp, tvVitalsPulse, tvVitalsTemp, tvVitalsWeight;
-        MaterialButton btnEditVital, btnDeleteVital;
+        android.widget.ImageView btnEditVital, btnDeleteVital;
 
         public VitalsViewHolder(@NonNull View itemView) {
             super(itemView);

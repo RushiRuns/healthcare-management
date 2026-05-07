@@ -61,7 +61,7 @@ public class AddPatientActivity extends AppCompatActivity {
         // --- NEW DATE PICKER LOGIC ---
         editDob.setOnClickListener(v -> {
             Calendar cal = Calendar.getInstance();
-            DatePickerDialog dialog = new DatePickerDialog(AddPatientActivity.this,
+            DatePickerDialog dialog = new DatePickerDialog(AddPatientActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog,
                     (view, year, month, dayOfMonth) -> {
                         // Formats date to YYYY-MM-DD for MySQL
                         String date = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
@@ -86,7 +86,7 @@ public class AddPatientActivity extends AppCompatActivity {
                     }
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(AddPatientActivity.this,
-                            android.R.layout.simple_dropdown_item_1line, displayNames);
+                            R.layout.item_dropdown, displayNames);
                     searchPatientAuto.setAdapter(adapter);
 
                     searchPatientAuto.setOnItemClickListener((parent, view, position, id) -> {

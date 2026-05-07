@@ -74,7 +74,7 @@ public class PatientFragments {
 
         private void showAddConditionBottomSheet(@Nullable MedicalHistory existingRecord) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
-                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.Theme_Healthcare_app_BottomSheetDialog);
 
             View bottomSheetView = LayoutInflater.from(getContext())
                     .inflate(R.layout.bottom_sheet_add_condition, null);
@@ -98,7 +98,7 @@ public class PatientFragments {
 
             inputDate.setOnClickListener(v -> {
                 java.util.Calendar calendar = java.util.Calendar.getInstance();
-                new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                new android.app.DatePickerDialog(getContext(), android.R.style.Theme_DeviceDefault_Light_Dialog, (view1, year, month, dayOfMonth) -> {
                     String selectedDate = String.format(java.util.Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                     inputDate.setText(selectedDate);
                 }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
@@ -301,7 +301,7 @@ public class PatientFragments {
 
         private void showAddPrescriptionBottomSheet(@Nullable com.rushi.healthcare_app.models.PrescriptionRecord existingRecord) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
-                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.Theme_Healthcare_app_BottomSheetDialog);
 
             View bottomSheetView = LayoutInflater.from(getContext())
                     .inflate(R.layout.bottom_sheet_add_prescription, null);
@@ -332,7 +332,7 @@ public class PatientFragments {
 
             inputDate.setOnClickListener(v -> {
                 java.util.Calendar calendar = java.util.Calendar.getInstance();
-                new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                new android.app.DatePickerDialog(getContext(), android.R.style.Theme_DeviceDefault_Light_Dialog, (view1, year, month, dayOfMonth) -> {
                     String selectedDate = String.format(java.util.Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                     inputDate.setText(selectedDate);
                 }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
@@ -671,7 +671,7 @@ public class PatientFragments {
 
         private void showAddVitalsBottomSheet(@Nullable com.rushi.healthcare_app.models.VitalSign existingVital) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
-                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.Theme_Healthcare_app_BottomSheetDialog);
 
             View bottomSheetView = LayoutInflater.from(getContext())
                     .inflate(R.layout.bottom_sheet_add_vitals, null);
@@ -851,7 +851,7 @@ public class PatientFragments {
 
         private void showAddLabBottomSheet(@Nullable com.rushi.healthcare_app.models.LabRecord existingRecord) {
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
-                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+                    new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.Theme_Healthcare_app_BottomSheetDialog);
 
             View bottomSheetView = LayoutInflater.from(getContext())
                     .inflate(R.layout.bottom_sheet_add_lab, null);

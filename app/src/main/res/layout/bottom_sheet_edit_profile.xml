@@ -2,7 +2,8 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,41 +20,62 @@
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"
-            android:background="?attr/colorOutlineVariant"
-            android:backgroundTint="?attr/colorOutlineVariant" />
+            android:background="#E2E8F0" />
 
         <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Edit Patient Profile"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#1A2535"
             android:layout_marginBottom="24dp" />
 
         <!-- Phone Number -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Phone Number">
+            android:hint="Phone Number"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEditPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Date of Birth -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Date of Birth (YYYY-MM-DD)">
+            android:hint="Date of Birth (YYYY-MM-DD)"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEditDOB"
@@ -61,39 +83,66 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:clickable="true"
-                android:inputType="none" />
+                android:inputType="none"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Blood Type -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Blood Type (e.g., O+, AB-)">
+            android:hint="Blood Type (e.g., O+, AB-)"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEditBloodType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Allergies -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="28dp"
-            android:hint="Allergies (comma separated)">
+            android:hint="Allergies (comma separated)"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEditAllergies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,9 +150,15 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveProfile"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:text="Save Changes"
-            app:cornerRadius="12dp" />
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:textColor="#FFFFFF"
+            android:fontFamily="sans-serif-medium"
+            app:backgroundTint="#185FA5"
+            app:elevation="0dp"
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 

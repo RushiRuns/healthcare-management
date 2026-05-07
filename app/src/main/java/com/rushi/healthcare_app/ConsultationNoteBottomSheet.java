@@ -24,6 +24,11 @@ public class ConsultationNoteBottomSheet extends BottomSheetDialogFragment {
 
     public ConsultationNoteBottomSheet() { }
 
+    @Override
+    public int getTheme() {
+        return R.style.Theme_Healthcare_app_BottomSheetDialog;
+    }
+
     public void setOnSuccessCallback(Runnable callback) {
         this.onSuccessCallback = callback;
     }

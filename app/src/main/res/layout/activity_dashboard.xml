@@ -9,6 +9,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#F5F7F9"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -43,16 +44,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Good Morning,"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textSize="15sp"
+                    android:textColor="#64748B" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Doctor"
-                    android:textAppearance="?attr/textAppearanceDisplaySmall"
-                    android:textColor="?attr/colorPrimary"
-                    android:textStyle="bold" />
+                    android:textSize="24sp"
+                    android:textColor="#1A2535"
+                    android:fontFamily="sans-serif-medium" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,8 +61,8 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="28dp"
                     android:text="Here's an overview of your practice today."
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textSize="13sp"
+                    android:textColor="#64748B" />
 
                 <!-- Stats section header -->
                 <TextView
@@ -69,8 +70,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:text="Overview"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:textSize="15sp"
+                    android:textColor="#1A2535"
+                    android:fontFamily="sans-serif-medium" />
 
                 <!-- Stats Row 1: Today's Appointments + New Patients -->
                 <LinearLayout
@@ -86,39 +88,40 @@
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
                         app:cardElevation="0dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardBackgroundColor="?attr/colorPrimaryContainer"
-                        app:strokeWidth="0dp">
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:strokeColor="#E2E8F0"
+                        app:strokeWidth="1dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="20dp">
+                            android:padding="16dp">
 
                             <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@android:drawable/ic_menu_my_calendar"
                                 android:layout_marginBottom="12dp"
-                                app:tint="?attr/colorOnPrimaryContainer" />
+                                app:tint="#185FA5" />
 
                             <TextView
                                 android:id="@+id/tvTodaysAppointments"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textAppearance="?attr/textAppearanceDisplayMedium"
-                                android:textColor="?attr/colorOnPrimaryContainer"
-                                android:textStyle="bold" />
+                                android:textSize="24sp"
+                                android:textColor="#1A2535"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="Today's Appointments"
-                                android:textAppearance="?attr/textAppearanceLabelMedium"
-                                android:textColor="?attr/colorOnPrimaryContainer" />
+                                android:textSize="13sp"
+                                android:textColor="#64748B" />
 
                         </LinearLayout>
 
@@ -131,39 +134,40 @@
                         android:layout_weight="1"
                         android:layout_marginStart="6dp"
                         app:cardElevation="0dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                        app:strokeWidth="0dp">
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:strokeColor="#E2E8F0"
+                        app:strokeWidth="1dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="20dp">
+                            android:padding="16dp">
 
                             <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@android:drawable/ic_menu_add"
                                 android:layout_marginBottom="12dp"
-                                app:tint="?attr/colorOnSecondaryContainer" />
+                                app:tint="#185FA5" />
 
                             <TextView
                                 android:id="@+id/tvNewPatients"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textAppearance="?attr/textAppearanceDisplayMedium"
-                                android:textColor="?attr/colorOnSecondaryContainer"
-                                android:textStyle="bold" />
+                                android:textSize="24sp"
+                                android:textColor="#1A2535"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="New Patients (Month)"
-                                android:textAppearance="?attr/textAppearanceLabelMedium"
-                                android:textColor="?attr/colorOnSecondaryContainer" />
+                                android:textSize="13sp"
+                                android:textColor="#64748B" />
 
                         </LinearLayout>
 
@@ -177,26 +181,28 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="28dp"
                     app:cardElevation="0dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardBackgroundColor="?attr/colorTertiaryContainer"
-                    app:strokeWidth="0dp">
+                    app:cardCornerRadius="8dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:strokeColor="#E2E8F0"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="20dp"
+                        android:padding="16dp"
                         android:gravity="center_vertical">
 
                         <!-- Icon -->
+                        <!-- Alert = Amber -->
                         <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@android:drawable/ic_dialog_alert"
                             android:padding="8dp"
                             android:background="@drawable/circle_avatar_bg"
-                            android:backgroundTint="?attr/colorOnTertiaryContainer"
-                            app:tint="?attr/colorTertiaryContainer" />
+                            android:backgroundTint="#FEF3C7"
+                            app:tint="#D97706" />
 
                         <!-- Label + count -->
                         <LinearLayout
@@ -210,17 +216,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Pending Follow-ups"
-                                android:textAppearance="?attr/textAppearanceTitleSmall"
-                                android:textColor="?attr/colorOnTertiaryContainer" />
+                                android:textSize="15sp"
+                                android:textColor="#1A2535"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Requires your attention"
-                                android:textAppearance="?attr/textAppearanceLabelSmall"
-                                android:textColor="?attr/colorOnTertiaryContainer"
-                                android:alpha="0.7" />
+                                android:textSize="13sp"
+                                android:textColor="#64748B" />
 
                         </LinearLayout>
 
@@ -230,9 +236,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textAppearance="?attr/textAppearanceDisplaySmall"
-                            android:textColor="?attr/colorOnTertiaryContainer"
-                            android:textStyle="bold" />
+                            android:textSize="24sp"
+                            android:textColor="#1A2535"
+                            android:fontFamily="sans-serif-medium" />
 
                     </LinearLayout>
 
@@ -244,39 +250,42 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:text="Quick Actions"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:textSize="15sp"
+                    android:textColor="#1A2535"
+                    android:fontFamily="sans-serif-medium" />
 
                 <!-- Quick Action: View Today's Schedule -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    app:cardElevation="1dp"
-                    app:cardCornerRadius="16dp"
-                    app:strokeWidth="0dp">
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:strokeColor="#E2E8F0"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="18dp"
+                        android:padding="16dp"
                         android:gravity="center_vertical"
                         android:background="?attr/selectableItemBackground">
 
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            app:cardCornerRadius="12dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardCornerRadius="8dp"
                             app:cardElevation="0dp"
-                            app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                            app:cardBackgroundColor="#F5F7F9"
                             app:strokeWidth="0dp">
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:padding="10dp"
+                                android:padding="8dp"
                                 android:src="@android:drawable/ic_menu_my_calendar"
-                                app:tint="?attr/colorOnPrimaryContainer" />
+                                app:tint="#185FA5" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -285,14 +294,15 @@
                             android:layout_weight="1"
                             android:layout_marginStart="16dp"
                             android:text="View Today's Schedule"
-                            android:textAppearance="?attr/textAppearanceTitleSmall"
-                            android:textColor="?attr/colorOnSurface" />
+                            android:textSize="13sp"
+                            android:textColor="#1A2535"
+                            android:fontFamily="sans-serif-medium" />
 
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="?attr/colorOnSurfaceVariant" />
+                            app:tint="#64748B" />
 
                     </LinearLayout>
 
@@ -306,10 +316,10 @@
 
     <!-- Sidebar -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="320dp"
+        android:layout_width="220dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?attr/colorSurfaceContainer"
+        android:background="#1A2535"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.navigation.NavigationView
@@ -319,11 +329,10 @@
             android:background="@android:color/transparent"
             app:headerLayout="@layout/nav_header"
             app:itemBackground="@drawable/nav_item_background"
-            app:itemIconPadding="24dp"
-            app:itemIconTint="@color/nav_item_color"
-            app:itemTextAppearance="@style/CustomNavItemText"
-            app:itemTextColor="@color/nav_item_color"
-            app:itemVerticalPadding="16dp"
+            app:itemIconPadding="16dp"
+            app:itemIconTint="#CBD5E1"
+            app:itemTextColor="#CBD5E1"
+            app:itemVerticalPadding="12dp"
             app:layout_constraintBottom_toTopOf="@+id/btnSignOut"
             app:layout_constraintTop_toTopOf="parent"
             app:menu="@menu/sidebar_menu" />
@@ -341,15 +350,17 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_logout_red" />
+                android:src="@drawable/ic_logout_red"
+                app:tint="#EF4444" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="16dp"
                 android:text="Sign Out"
-                android:textColor="?attr/colorError"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
+                android:textColor="#EF4444"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium" />
 
         </LinearLayout>
 

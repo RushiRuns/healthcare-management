@@ -4,9 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="12dp"
-    app:strokeWidth="0dp">
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:strokeColor="#E2E8F0"
+    app:cardCornerRadius="8dp"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,9 +29,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?attr/textAppearanceLabelLarge"
-                android:textColor="?attr/colorPrimary"
-                android:textStyle="bold" />
+                android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+                android:textColor="#185FA5" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipFollowUp"
@@ -42,27 +44,28 @@
         </LinearLayout>
 
         <!-- Divider -->
-        <com.google.android.material.divider.MaterialDivider
+        <View
+            android:background="#E2E8F0"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:dividerColor="?attr/colorOutlineVariant" />
+            android:layout_height="1dp"
+            android:layout_marginBottom="12dp" />
 
         <!-- Diagnosis -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Diagnosis"
-            android:textAppearance="?attr/textAppearanceLabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textStyle="bold" />
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#64748B" />
 
         <TextView
             android:id="@+id/tvDiagnosis"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurface"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#1A2535"
             android:layout_marginBottom="8dp" />
 
         <!-- Symptoms -->
@@ -70,16 +73,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Symptoms"
-            android:textAppearance="?attr/textAppearanceLabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textStyle="bold" />
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#64748B" />
 
         <TextView
             android:id="@+id/tvSymptoms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurface"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#1A2535"
             android:layout_marginBottom="8dp" />
 
         <!-- Observations -->
@@ -88,16 +92,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Observations"
-            android:textAppearance="?attr/textAppearanceLabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textStyle="bold" />
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#64748B" />
 
         <TextView
             android:id="@+id/tvObservations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurface"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#1A2535"
             android:layout_marginBottom="8dp" />
 
         <!-- Treatment Plan -->
@@ -105,24 +110,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Treatment Plan"
-            android:textAppearance="?attr/textAppearanceLabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textStyle="bold" />
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#64748B" />
 
         <TextView
             android:id="@+id/tvPlan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurface" />
+            android:textSize="13sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#1A2535" />
 
         <!-- Divider -->
-        <com.google.android.material.divider.MaterialDivider
+        <View
+            android:background="#E2E8F0"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="1dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="4dp"
-            app:dividerColor="?attr/colorOutlineVariant" />
+            android:layout_marginBottom="4dp" />
 
         <!-- Action Row: Edit + Delete icons -->
         <LinearLayout
@@ -131,22 +137,26 @@
             android:orientation="horizontal"
             android:gravity="end">
 
-            <com.google.android.material.button.MaterialButton
+            <ImageView
                 android:id="@+id/btnEditNote"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="12dp"
+                android:padding="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Edit"
-                app:icon="@drawable/ic_edit_24" />
+                android:src="@drawable/ic_edit_24"
+                app:tint="#64748B" />
 
-            <com.google.android.material.button.MaterialButton
+            <ImageView
                 android:id="@+id/btnDeleteNote"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Delete"
-                app:icon="@drawable/ic_delete_24"
-                app:iconTint="?attr/colorError" />
+                android:src="@drawable/ic_delete_24"
+                app:tint="#EF4444" />
 
         </LinearLayout>
 

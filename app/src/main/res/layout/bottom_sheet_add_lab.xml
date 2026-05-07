@@ -19,8 +19,8 @@
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"
-            android:background="?attr/colorOutlineVariant"
-            android:backgroundTint="?attr/colorOutlineVariant" />
+            android:background="#E2E8F0"
+            android:backgroundTint="#E2E8F0" />
 
         <!-- Title -->
         <TextView
@@ -28,13 +28,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add Lab Result"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#1A2535"
             android:layout_marginBottom="24dp" />
 
         <!-- Test Name -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -44,13 +54,25 @@
                 android:id="@+id/inputTestName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Test Date -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -62,7 +84,10 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:clickable="true"
-                android:inputType="none" />
+                android:inputType="none"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,7 +100,16 @@
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -83,15 +117,27 @@
                 android:hint="Result Value">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputResultValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text" />
+                android:id="@+id/inputResultValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -99,10 +145,13 @@
                 android:hint="Unit (e.g., mg/dL)">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputUnit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text" />
+                android:id="@+id/inputUnit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -110,7 +159,16 @@
 
         <!-- Reference Range -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:textColorHint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -120,7 +178,10 @@
                 android:id="@+id/inputReferenceRange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
+                android:fontFamily="sans-serif" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,8 +190,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Status"
-            android:textAppearance="?attr/textAppearanceLabelLarge"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#64748B"
             android:layout_marginBottom="8dp" />
 
         <!-- Status radio group -->
@@ -168,9 +230,14 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveLab"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:text="Save Lab Result"
-            app:cornerRadius="12dp" />
+            app:cornerRadius="8dp"
+            app:elevation="0dp"
+            app:backgroundTint="#185FA5"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium" />
 
     </LinearLayout>
 

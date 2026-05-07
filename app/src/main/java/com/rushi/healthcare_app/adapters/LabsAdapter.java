@@ -61,7 +61,7 @@ public class LabsAdapter extends RecyclerView.Adapter<LabsAdapter.LabViewHolder>
 
     static class LabViewHolder extends RecyclerView.ViewHolder {
         TextView tvTestName, tvDate, tvResult, tvUnit, tvRange;
-        MaterialButton btnEdit, btnDelete;
+        android.widget.ImageView btnEdit, btnDelete;
 
         public LabViewHolder(@NonNull View itemView) {
             super(itemView);

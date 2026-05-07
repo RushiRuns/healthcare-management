@@ -70,7 +70,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     static class NotesViewHolder extends RecyclerView.ViewHolder {
         TextView tvNoteDate, tvSymptoms, tvPlan, tvDiagnosis, tvObservations, labelObservations;
         Chip chipFollowUp;
-        MaterialButton btnEditNote, btnDeleteNote;
+        android.widget.ImageView btnEditNote, btnDeleteNote;
 
         public NotesViewHolder(@NonNull View itemView) {
             super(itemView);

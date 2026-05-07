@@ -53,8 +53,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
         TextView tvConditionName;
-        MaterialButton btnEditHistory;
-        MaterialButton btnDeleteHistory;
+        android.widget.ImageView btnEditHistory;
+        android.widget.ImageView btnDeleteHistory;
 
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);

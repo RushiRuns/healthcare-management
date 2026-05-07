@@ -57,7 +57,7 @@ public class RxAdapter extends RecyclerView.Adapter<RxAdapter.RxViewHolder> {
 
     static class RxViewHolder extends RecyclerView.ViewHolder {
         TextView textMedicationName, textDosage, textFrequency, textDate;
-        MaterialButton btnEdit, btnDelete;
+        android.widget.ImageView btnEdit, btnDelete;
 
         public RxViewHolder(@NonNull View itemView) {
             super(itemView);

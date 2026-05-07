@@ -1,8 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.Healthcare_app" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Healthcare_app" parent="Theme.Material3.Light.NoActionBar">
+        <item name="bottomSheetDialogTheme">@style/Theme.Healthcare_app.BottomSheetDialog</item>
     </style>
 
     <style name="Theme.Healthcare_app" parent="Base.Theme.Healthcare_app" />
+
+    <!-- Forces all BottomSheetDialogs to always use light mode -->
+    <style name="Theme.Healthcare_app.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- Force light surface colors -->
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#1A2535</item>
+        <item name="colorOnSurfaceVariant">#64748B</item>
+        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="colorPrimary">#185FA5</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <!-- Force light text colors -->
+        <item name="android:textColorPrimary">#1A2535</item>
+        <item name="android:textColorSecondary">#64748B</item>
+        <item name="android:textColorHint">#64748B</item>
+        <!-- Ensure input fields are light -->
+        <item name="colorControlNormal">#E2E8F0</item>
+        <item name="colorControlActivated">#185FA5</item>
+        <!-- Bottom sheet background -->
+        <item name="bottomSheetStyle">@style/LightBottomSheetStyle</item>
+    </style>
+
+    <style name="LightBottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">#FFFFFF</item>
+        <item name="android:elevation">0dp</item>
+    </style>
 
     <style name="CustomNavItemText" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textSize">16sp</item>

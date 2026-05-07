@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F7F9"
     android:fillViewport="true">
 
     <LinearLayout
@@ -15,13 +16,14 @@
 
         <!-- Logo / App icon -->
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginBottom="32dp"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?attr/colorPrimaryContainer"
-            app:strokeWidth="0dp">
+            app:cardBackgroundColor="#FFFFFF"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
 
             <ImageView
                 android:id="@+id/ivLogo"
@@ -29,7 +31,7 @@
                 android:layout_height="match_parent"
                 android:padding="16dp"
                 android:src="@drawable/logo_background"
-                app:tint="?attr/colorOnPrimaryContainer" />
+                app:tint="#185FA5" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -39,11 +41,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome&#10;Back"
-            android:textAppearance="?attr/textAppearanceDisplaySmall"
-            android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
+            android:textSize="24sp"
+            android:textColor="#1A2535"
+            android:fontFamily="sans-serif-medium"
             android:lineSpacingMultiplier="1.05"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="8dp" />
 
         <!-- Subtitle -->
         <TextView
@@ -51,8 +53,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sign in to continue your journey."
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp"
+            android:textColor="#64748B"
+            android:fontFamily="sans-serif"
             android:layout_marginBottom="40dp" />
 
         <!-- Username field -->
@@ -63,12 +66,23 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:hint="Username"
-            app:startIconDrawable="@drawable/ic_person">
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
+            app:startIconDrawable="@drawable/ic_person"
+            app:startIconTint="#64748B">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
                 android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -82,12 +96,24 @@
             android:layout_marginBottom="32dp"
             android:hint="Password"
             app:endIconMode="password_toggle"
-            app:startIconDrawable="@drawable/ic_lock">
+            app:endIconTint="#64748B"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E2E8F0"
+            app:boxStrokeWidth="1dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:hintTextColor="#185FA5"
+            app:startIconDrawable="@drawable/ic_lock"
+            app:startIconTint="#64748B">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="#1A2535"
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -102,10 +128,15 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:text="Sign In"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            app:cornerRadius="16dp" />
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#185FA5"
+            app:elevation="0dp"
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 

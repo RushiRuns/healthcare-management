@@ -22,16 +22,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Current Conditions"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface"
+                android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+                android:textColor="#1A2535"
                 android:layout_marginBottom="4dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="ACTIVE"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="?attr/colorPrimary"
+                android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+                android:textColor="#185FA5"
                 android:letterSpacing="0.1"
                 android:layout_marginBottom="12dp" />
 
@@ -43,27 +45,29 @@
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false" />
 
-            <com.google.android.material.divider.MaterialDivider
+            <View
+            android:background="#E2E8F0"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:dividerColor="?attr/colorOutlineVariant" />
+                android:layout_height="1dp"
+                android:layout_marginBottom="24dp" />
 
             <!-- Section: Past History (Resolved) -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Past History"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface"
+                android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+                android:textColor="#1A2535"
                 android:layout_marginBottom="4dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="RESOLVED"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="?attr/colorSecondary"
+                android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+                android:textColor="#64748B"
                 android:letterSpacing="0.1"
                 android:layout_marginBottom="12dp" />
 
@@ -85,6 +89,11 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:text="Add Condition"
-        app:icon="@android:drawable/ic_input_add" />
+        app:icon="@android:drawable/ic_input_add" 
+        app:backgroundTint="#185FA5"
+        android:textColor="#FFFFFF"
+        app:iconTint="#FFFFFF"
+        app:elevation="0dp"
+        android:fontFamily="sans-serif-medium" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

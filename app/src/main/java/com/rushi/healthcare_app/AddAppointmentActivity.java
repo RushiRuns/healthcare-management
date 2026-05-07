@@ -74,7 +74,7 @@ public class AddAppointmentActivity extends AppCompatActivity {
                     }
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(AddAppointmentActivity.this,
-                            android.R.layout.simple_dropdown_item_1line, displayNames);
+                            R.layout.item_dropdown, displayNames);
                     searchPatientAuto.setAdapter(adapter);
 
                     // Handle clicks properly from the natively filtered list
@@ -101,14 +101,14 @@ public class AddAppointmentActivity extends AppCompatActivity {
     private void setupPickers() {
         editDate.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
-            new DatePickerDialog(this, (view, y, m, d) ->
+            new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog, (view, y, m, d) ->
                     editDate.setText(String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d)),
                     c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
         });
 
         editTime.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
-            new TimePickerDialog(this, (view, h, m) ->
+            new TimePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog, (view, h, m) ->
                     editTime.setText(String.format(Locale.US, "%02d:%02d:00", h, m)),
                     c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
         });

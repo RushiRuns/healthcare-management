@@ -11,6 +11,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#F5F7F9"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -24,7 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:title="Schedule"
-                app:titleCentered="true">
+                app:titleCentered="true"
+                app:titleTextColor="#1A2535">
 
                 <ImageView
                     android:id="@+id/btnToolbarFilter"
@@ -34,7 +36,7 @@
                     android:padding="16dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_filter"
-                    app:tint="?attr/colorOnSurface" />
+                    app:tint="#64748B" />
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -56,17 +58,22 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="24dp"
             android:contentDescription="Book New Appointment"
-            app:srcCompat="@drawable/ic_plus" />
+            app:srcCompat="@drawable/ic_plus"
+            app:backgroundTint="#185FA5"
+            app:tint="#FFFFFF"
+            app:elevation="0dp"
+            app:pressedTranslationZ="0dp"
+            app:hoveredFocusedTranslationZ="0dp" />
 
         <include layout="@layout/layout_appointment_bottom_sheet" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="320dp"
+        android:layout_width="220dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?attr/colorSurfaceContainer"
+        android:background="#1A2535"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.navigation.NavigationView
@@ -76,11 +83,10 @@
             android:background="@android:color/transparent"
             app:headerLayout="@layout/nav_header"
             app:itemBackground="@drawable/nav_item_background"
-            app:itemIconPadding="24dp"
-            app:itemIconTint="@color/nav_item_color"
-            app:itemTextAppearance="@style/CustomNavItemText"
-            app:itemTextColor="@color/nav_item_color"
-            app:itemVerticalPadding="16dp"
+            app:itemIconPadding="16dp"
+            app:itemIconTint="#CBD5E1"
+            app:itemTextColor="#CBD5E1"
+            app:itemVerticalPadding="12dp"
             app:layout_constraintBottom_toTopOf="@+id/btnSignOut"
             app:layout_constraintTop_toTopOf="parent"
             app:menu="@menu/sidebar_menu" />
@@ -98,15 +104,17 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_logout_red" />
+                android:src="@drawable/ic_logout_red"
+                app:tint="#EF4444" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="16dp"
                 android:text="Sign Out"
-                android:textColor="?attr/colorError"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
+                android:textColor="#EF4444"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium" />
 
         </LinearLayout>
 
