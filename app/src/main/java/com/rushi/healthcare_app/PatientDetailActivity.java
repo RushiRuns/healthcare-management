@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -29,9 +30,10 @@ import retrofit2.Response;
 public class PatientDetailActivity extends AppCompatActivity {
 
     private String patientId;
-    private Patient currentPatient; // Store current data for pre-filling
+    private Patient currentPatient;
     private TextView tvAvatar, tvPatientId, tvDemographics, tvBloodType, tvPhone, tvAllergies;
     private ImageView btnToolbarEdit;
+    private SwitchCompat switchPatientStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +51,19 @@ public class PatientDetailActivity extends AppCompatActivity {
         tvPhone = findViewById(R.id.patientPhone);
         tvAllergies = findViewById(R.id.patientAllergies);
         btnToolbarEdit = findViewById(R.id.btnToolbarEdit);
+        switchPatientStatus = findViewById(R.id.switchPatientStatus);
 
         patientId = getIntent().getStringExtra("PATIENT_ID");
         if (patientId == null) patientId = "1";
 
         btnToolbarEdit.setOnClickListener(v -> showEditProfileBottomSheet());
+
+        switchPatientStatus.setOnClickListener(v -> {
+            if (currentPatient == null) return;
+            boolean isChecked = switchPatientStatus.isChecked();
+            switchPatientStatus.setText(isChecked ? "Active" : "Inactive");
+            updatePatientStatus(isChecked ? 1 : 0);
+        });
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
@@ -85,7 +95,6 @@ public class PatientDetailActivity extends AppCompatActivity {
         EditText etAllergies = view.findViewById(R.id.inputEditAllergies);
         Button btnSave = view.findViewById(R.id.btnSaveProfile);
 
-        // Pre-fill data
         if (currentPatient != null) {
             etPhone.setText(currentPatient.getPhone());
             etDOB.setText(currentPatient.getDob());
@@ -93,7 +102,6 @@ public class PatientDetailActivity extends AppCompatActivity {
             etAllergies.setText(currentPatient.getAllergiesSummary().equals("None") ? "" : currentPatient.getAllergiesSummary());
         }
 
-        // DatePicker for DOB
         etDOB.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog, (view1, year, month, dayOfMonth) -> {
@@ -109,13 +117,14 @@ public class PatientDetailActivity extends AppCompatActivity {
             data.put("date_of_birth", etDOB.getText().toString().trim());
             data.put("blood_type", etBlood.getText().toString().trim());
             data.put("allergies", etAllergies.getText().toString().trim());
+            data.put("is_active", currentPatient != null ? String.valueOf(currentPatient.getIsActive()) : "1");
 
             RetrofitClient.getApiService().updatePatientProfile(data).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         dialog.dismiss();
-                        fetchPatientHeader(); // Refresh UI instantly
+                        fetchPatientHeader();
                     } else {
                         Toast.makeText(PatientDetailActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
                     }
@@ -127,6 +136,42 @@ public class PatientDetailActivity extends AppCompatActivity {
             });
         });
         dialog.show();
+    }
+
+    private void updatePatientStatus(int status) {
+        if (currentPatient == null) return;
+
+        HashMap<String, String> data = new HashMap<>();
+        data.put("patient_id", patientId);
+        data.put("phone", currentPatient.getPhone());
+        data.put("date_of_birth", currentPatient.getDob());
+        data.put("blood_type", currentPatient.getBloodType().equals("N/A") ? "" : currentPatient.getBloodType());
+        data.put("allergies", currentPatient.getAllergiesSummary().equals("None") ? "" : currentPatient.getAllergiesSummary());
+        data.put("is_active", String.valueOf(status));
+
+        RetrofitClient.getApiService().updatePatientProfile(data).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(PatientDetailActivity.this, "Status updated", Toast.LENGTH_SHORT).show();
+                    currentPatient.setIsActive(status);
+                } else {
+                    Toast.makeText(PatientDetailActivity.this, "Failed to update status", Toast.LENGTH_SHORT).show();
+                    revertSwitchState(status);
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(PatientDetailActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                revertSwitchState(status);
+            }
+        });
+    }
+
+    private void revertSwitchState(int attemptedStatus) {
+        boolean originalState = (attemptedStatus == 0);
+        switchPatientStatus.setChecked(originalState);
+        switchPatientStatus.setText(originalState ? "Active" : "Inactive");
     }
 
     private void fetchPatientHeader() {
@@ -145,9 +190,12 @@ public class PatientDetailActivity extends AppCompatActivity {
                         tvBloodType.setText(currentPatient.getBloodType());
                         tvPhone.setText(currentPatient.getPhone());
                         tvAllergies.setText(currentPatient.getAllergiesSummary());
+
+                        boolean isActive = currentPatient.getIsActive() == 1;
+                        switchPatientStatus.setChecked(isActive);
+                        switchPatientStatus.setText(isActive ? "Active" : "Inactive");
                     }
                 } else {
-                    // Add this log to see why the server rejected the request
                     android.util.Log.e("API_ERROR", "Response Error Code: " + response.code());
                     try {
                         android.util.Log.e("API_ERROR", "Response Error Body: " + response.errorBody().string());

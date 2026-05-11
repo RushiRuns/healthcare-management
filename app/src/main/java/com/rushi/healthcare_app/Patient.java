@@ -35,6 +35,9 @@ public class Patient {
     @SerializedName("allergies")
     private String allergies;
 
+    @SerializedName("is_active")
+    private int isActive;
+
     @SerializedName("medical_history")
     private List<MedicalHistory> medicalHistory;
 
@@ -46,6 +49,8 @@ public class Patient {
     public String getBloodType() { return bloodType != null ? bloodType : "N/A"; }
     public String getPhone() { return phone; }
     public String getEmail() { return email; }
+    public int getIsActive() { return isActive; }
+    public void setIsActive(int isActive) { this.isActive = isActive; }
     public List<MedicalHistory> getMedicalHistory() { return medicalHistory; }
 
     public String getAge() {
