@@ -17,7 +17,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
+            android:background="#F5F7F9"
             app:elevation="0dp">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -39,6 +39,78 @@
                     app:tint="#64748B" />
 
             </com.google.android.material.appbar.MaterialToolbar>
+
+            <EditText
+                android:id="@+id/editSearchAppointment"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:background="@drawable/bg_search_minimal"
+                android:hint="Search patient name..."
+                android:textColorHint="#94A3B8"
+                android:textColor="#1A2535"
+                android:paddingHorizontal="16dp"
+                android:textSize="15sp"
+                android:inputType="textPersonName"
+                android:maxLines="1" />
+
+            <LinearLayout
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp"
+                android:layout_marginHorizontal="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/filterAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    android:textColor="#1A2535"
+                    android:background="@drawable/bg_filter_selected"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:id="@+id/filterToday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today"
+                    android:textColor="#212C3C"
+                    android:background="@drawable/bg_filter_unselected"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:id="@+id/filterWeek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="This Week"
+                    android:textColor="#1A2535"
+                    android:background="@drawable/bg_filter_unselected"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:id="@+id/filterMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="This Month"
+                    android:textColor="#1A2535"
+                    android:background="@drawable/bg_filter_unselected"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 

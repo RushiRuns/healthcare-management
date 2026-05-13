@@ -153,19 +153,21 @@ public class PatientsActivity extends AppCompatActivity {
     }
 
     private void updateFilterUI(TextView selectedText, String status) {
-        textFilterActive.setTextColor(Color.parseColor("#64748B"));
+        // Reset all to unselected state
+        textFilterActive.setTextColor(Color.parseColor("#1A2535"));
         textFilterActive.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         textFilterActive.setBackgroundResource(R.drawable.bg_filter_unselected);
 
-        textFilterInactive.setTextColor(Color.parseColor("#64748B"));
+        textFilterInactive.setTextColor(Color.parseColor("#1A2535"));
         textFilterInactive.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         textFilterInactive.setBackgroundResource(R.drawable.bg_filter_unselected);
 
-        textFilterAll.setTextColor(Color.parseColor("#64748B"));
+        textFilterAll.setTextColor(Color.parseColor("#1A2535"));
         textFilterAll.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         textFilterAll.setBackgroundResource(R.drawable.bg_filter_unselected);
 
-        selectedText.setTextColor(Color.parseColor("#1A2535"));
+        // Highlight the selected state
+        selectedText.setTextColor(Color.parseColor("#FFFFFF"));
         selectedText.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         selectedText.setBackgroundResource(R.drawable.bg_filter_selected);
 

@@ -76,6 +76,11 @@ public class AppointmentsAdapter extends RecyclerView.Adapter<AppointmentsAdapte
         holder.itemView.setOnClickListener(v -> listener.onAppointmentClick(appt));
     }
 
+    public void updateList(List<Appointment> newList) {
+        this.appointmentList = newList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return appointmentList == null ? 0 : appointmentList.size();
