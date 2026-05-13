@@ -100,4 +100,10 @@ public interface ApiService {
 
     @POST("followups/update_status.php")
     Call<GenericResponse> updateFollowUpStatus(@Body UpdateFollowUpRequest request);
+
+    @POST("appointments/update.php")
+    Call<Void> updateAppointment(@Body java.util.HashMap<String, Object> data);
+
+    @POST("appointments/delete.php")
+    Call<Void> deleteAppointment(@Body java.util.HashMap<String, String> data);
 }

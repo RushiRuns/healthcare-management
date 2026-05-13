@@ -2,7 +2,6 @@ package com.rushi.healthcare_app;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import retrofit2.Call;
@@ -41,13 +41,10 @@ public class AppointmentsActivity extends AppCompatActivity {
     private AppointmentsAdapter adapter;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
 
-    private TextView sheetPatientName;
-    private TextView sheetAllergies;
-    private TextView sheetConditions;
-    private MaterialButton btnOpenFullRecord;
-    private String currentSelectedPatientId = "";
+    private TextView sheetPatientName, sheetAllergies, sheetConditions;
+    private MaterialButton btnOpenFullRecord, btnEditAppointment, btnDeleteAppointment;
+    private Appointment currentSelectedAppointment = null;
 
-    // Filtering variables
     private List<Appointment> masterAppointmentList = new ArrayList<>();
     private EditText editSearchAppointment;
     private TextView filterAll, filterToday, filterWeek, filterMonth;
@@ -64,9 +61,7 @@ public class AppointmentsActivity extends AppCompatActivity {
         MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
 
         setSupportActionBar(topAppBar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, topAppBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -81,20 +76,17 @@ public class AppointmentsActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_dashboard) {
-                Intent intent = new Intent(AppointmentsActivity.this, DashboardActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(AppointmentsActivity.this, DashboardActivity.class));
                 finish();
             } else if (id == R.id.nav_patients) {
-                Intent intent = new Intent(AppointmentsActivity.this, PatientsActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(AppointmentsActivity.this, PatientsActivity.class));
                 finish();
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
-        LinearLayout btnSignOut = findViewById(R.id.btnSignOut);
-        btnSignOut.setOnClickListener(v -> {
+        findViewById(R.id.btnSignOut).setOnClickListener(v -> {
             Intent intent = new Intent(AppointmentsActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -108,38 +100,37 @@ public class AppointmentsActivity extends AppCompatActivity {
         sheetAllergies = findViewById(R.id.sheetAllergies);
         sheetConditions = findViewById(R.id.sheetConditions);
         btnOpenFullRecord = findViewById(R.id.btnOpenFullRecord);
+        btnEditAppointment = findViewById(R.id.btnEditAppointment);
+        btnDeleteAppointment = findViewById(R.id.btnDeleteAppointment);
 
         recyclerView = findViewById(R.id.recyclerViewAppointments);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Initialize adapter with empty list to prevent crash
-        adapter = new AppointmentsAdapter(new ArrayList<>(), appointment -> showPatientDetails(appointment));
+        adapter = new AppointmentsAdapter(new ArrayList<>(), this::showPatientDetails);
         recyclerView.setAdapter(adapter);
 
-        findViewById(R.id.fabAddAppointment).setOnClickListener(v -> {
-            startActivity(new Intent(AppointmentsActivity.this, AddAppointmentActivity.class));
-        });
+        findViewById(R.id.fabAddAppointment).setOnClickListener(v ->
+                startActivity(new Intent(AppointmentsActivity.this, AddAppointmentActivity.class))
+        );
 
         btnOpenFullRecord.setOnClickListener(v -> {
+            if (currentSelectedAppointment == null) return;
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Intent intent = new Intent(AppointmentsActivity.this, PatientDetailActivity.class);
             intent.putExtra("PATIENT_NAME", sheetPatientName.getText().toString());
-            intent.putExtra("PATIENT_ID", currentSelectedPatientId);
+            intent.putExtra("PATIENT_ID", currentSelectedAppointment.getPatientId());
             startActivity(intent);
         });
 
-        // Setup Filtering UI
-        // Setup Filtering UI
+        btnEditAppointment.setOnClickListener(v -> editAppointment());
+        btnDeleteAppointment.setOnClickListener(v -> deleteAppointment());
+
         setupSearchAndFilters();
 
-        // Check for the "Today" flag and apply filter before fetching
         if (getIntent().getBooleanExtra("FILTER_TODAY", false)) {
             currentActiveFilter = "Today";
             updateFilterUI(filterToday);
             findViewById(R.id.filterLayout).setVisibility(android.view.View.VISIBLE);
         }
-
-        fetchAppointments();
 
         getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
             @Override
@@ -156,6 +147,48 @@ public class AppointmentsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchAppointments();
+    }
+
+    private void deleteAppointment() {
+        if (currentSelectedAppointment == null) return;
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Appointment")
+                .setMessage("Remove this appointment? This action cannot be undone.")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("appointment_id", currentSelectedAppointment.getId());
+                    RetrofitClient.getApiService().deleteAppointment(map).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                                fetchAppointments();
+                            }
+                        }
+                        @Override public void onFailure(Call<Void> call, Throwable t) {}
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void editAppointment() {
+        if (currentSelectedAppointment == null) return;
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        Intent intent = new Intent(this, AddAppointmentActivity.class);
+        intent.putExtra("IS_EDIT", true);
+        intent.putExtra("APPT_ID", currentSelectedAppointment.getId());
+        intent.putExtra("PATIENT_ID", currentSelectedAppointment.getPatientId());
+        intent.putExtra("PATIENT_NAME", currentSelectedAppointment.getPatientName());
+        intent.putExtra("DATETIME", currentSelectedAppointment.getTime());
+        intent.putExtra("REASON", currentSelectedAppointment.getReasonForVisit());
+        startActivity(intent);
+    }
+
     private void setupSearchAndFilters() {
         editSearchAppointment = findViewById(R.id.editSearchAppointment);
         filterAll = findViewById(R.id.filterAll);
@@ -164,53 +197,23 @@ public class AppointmentsActivity extends AppCompatActivity {
         filterMonth = findViewById(R.id.filterMonth);
 
         LinearLayout filterLayout = findViewById(R.id.filterLayout);
-        android.widget.ImageView btnToolbarFilter = findViewById(R.id.btnToolbarFilter);
-
-        btnToolbarFilter.setOnClickListener(v -> {
-            if (filterLayout.getVisibility() == android.view.View.VISIBLE) {
-                filterLayout.setVisibility(android.view.View.GONE);
-            } else {
-                filterLayout.setVisibility(android.view.View.VISIBLE);
-            }
-        });
+        findViewById(R.id.btnToolbarFilter).setOnClickListener(v ->
+                filterLayout.setVisibility(filterLayout.getVisibility() == android.view.View.VISIBLE ? android.view.View.GONE : android.view.View.VISIBLE)
+        );
 
         editSearchAppointment.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 currentSearchQuery = s.toString().toLowerCase().trim();
                 applyFilters();
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
 
-        filterAll.setOnClickListener(v -> {
-            currentActiveFilter = "All";
-            updateFilterUI(filterAll);
-            applyFilters();
-        });
-
-        filterToday.setOnClickListener(v -> {
-            currentActiveFilter = "Today";
-            updateFilterUI(filterToday);
-            applyFilters();
-        });
-
-        filterWeek.setOnClickListener(v -> {
-            currentActiveFilter = "This Week";
-            updateFilterUI(filterWeek);
-            applyFilters();
-        });
-
-        filterMonth.setOnClickListener(v -> {
-            currentActiveFilter = "This Month";
-            updateFilterUI(filterMonth);
-            applyFilters();
-        });
+        filterAll.setOnClickListener(v -> { currentActiveFilter = "All"; updateFilterUI(filterAll); applyFilters(); });
+        filterToday.setOnClickListener(v -> { currentActiveFilter = "Today"; updateFilterUI(filterToday); applyFilters(); });
+        filterWeek.setOnClickListener(v -> { currentActiveFilter = "This Week"; updateFilterUI(filterWeek); applyFilters(); });
+        filterMonth.setOnClickListener(v -> { currentActiveFilter = "This Month"; updateFilterUI(filterMonth); applyFilters(); });
     }
 
     private void updateFilterUI(TextView activeTextView) {
@@ -230,17 +233,13 @@ public class AppointmentsActivity extends AppCompatActivity {
         List<Appointment> filteredList = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String todayString = sdf.format(new Date());
-
         Calendar now = Calendar.getInstance();
 
         for (Appointment appt : masterAppointmentList) {
-            // Search Text Condition
-            boolean matchesSearch = appt.getPatientName().toLowerCase().contains(currentSearchQuery);
-            if (!matchesSearch) continue;
+            if (!appt.getPatientName().toLowerCase().contains(currentSearchQuery)) continue;
 
-            // Date Condition
             boolean matchesDate = false;
-            String apptDateRaw = appt.getTime(); // Assuming "yyyy-MM-dd HH:mm:ss"
+            String apptDateRaw = appt.getTime();
             if (apptDateRaw == null || apptDateRaw.length() < 10) continue;
             String apptDateStr = apptDateRaw.substring(0, 10);
 
@@ -255,82 +254,53 @@ public class AppointmentsActivity extends AppCompatActivity {
                     if (apptDate != null) apptCal.setTime(apptDate);
 
                     if (currentActiveFilter.equals("This Week")) {
-                        matchesDate = (apptCal.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-                                apptCal.get(Calendar.WEEK_OF_YEAR) == now.get(Calendar.WEEK_OF_YEAR));
+                        matchesDate = (apptCal.get(Calendar.YEAR) == now.get(Calendar.YEAR) && apptCal.get(Calendar.WEEK_OF_YEAR) == now.get(Calendar.WEEK_OF_YEAR));
                     } else if (currentActiveFilter.equals("This Month")) {
-                        matchesDate = (apptCal.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-                                apptCal.get(Calendar.MONTH) == now.get(Calendar.MONTH));
+                        matchesDate = (apptCal.get(Calendar.YEAR) == now.get(Calendar.YEAR) && apptCal.get(Calendar.MONTH) == now.get(Calendar.MONTH));
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                } catch (Exception ignored) {}
             }
-
-            if (matchesDate) {
-                filteredList.add(appt);
-            }
+            if (matchesDate) filteredList.add(appt);
         }
-
-        if (adapter != null) {
-            adapter.updateList(filteredList);
-        }
+        if (adapter != null) adapter.updateList(filteredList);
     }
 
     private void fetchAppointments() {
-        ApiService apiService = RetrofitClient.getApiService();
-
-        apiService.getAppointments().enqueue(new Callback<AppointmentResponse>() {
+        RetrofitClient.getApiService().getAppointments().enqueue(new Callback<AppointmentResponse>() {
             @Override
             public void onResponse(Call<AppointmentResponse> call, Response<AppointmentResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     masterAppointmentList = response.body().getData();
-                    applyFilters(); // Populates list and applies default 'All' state
-                } else {
-                    String errorMsg = "Server error";
-                    if (response.errorBody() != null) {
-                        try { errorMsg += ": " + response.code(); } catch (Exception e) {}
-                    }
-                    Toast.makeText(AppointmentsActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    applyFilters();
                 }
             }
-
-            @Override
-            public void onFailure(Call<AppointmentResponse> call, Throwable t) {
-                Log.e("API_ERROR", "Error: " + t.getMessage());
-                Toast.makeText(AppointmentsActivity.this, "Check your connection", Toast.LENGTH_SHORT).show();
-            }
+            @Override public void onFailure(Call<AppointmentResponse> call, Throwable t) {}
         });
     }
 
     private void showPatientDetails(Appointment appointment) {
-        currentSelectedPatientId = appointment.getPatientId();
+        currentSelectedAppointment = appointment;
         sheetPatientName.setText(appointment.getPatientName());
         sheetAllergies.setText("Loading...");
         sheetConditions.setText("Loading...");
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        ApiService apiService = RetrofitClient.getApiService();
-
-        apiService.getPatientDetails(appointment.getPatientId()).enqueue(new Callback<PatientResponse>() {
+        RetrofitClient.getApiService().getPatientDetails(appointment.getPatientId()).enqueue(new Callback<PatientResponse>() {
             @Override
             public void onResponse(Call<PatientResponse> call, Response<PatientResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     Patient patient = response.body().getData();
-                    sheetPatientName.setText(patient.getName());
                     sheetAllergies.setText(patient.getAllergiesSummary());
                     sheetConditions.setText(patient.getConditionsSummary());
                 } else {
                     sheetAllergies.setText("Data unavailable");
                     sheetConditions.setText("Data unavailable");
-                    Log.e("AppointmentsActivity", "Response Error Code: " + response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<PatientResponse> call, Throwable t) {
                 sheetAllergies.setText("Connection failed");
                 sheetConditions.setText("Connection failed");
-                Log.e("AppointmentsActivity", "API Call Failed", t);
             }
         });
     }

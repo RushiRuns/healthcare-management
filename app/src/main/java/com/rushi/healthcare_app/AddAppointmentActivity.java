@@ -3,8 +3,6 @@ package com.rushi.healthcare_app;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
@@ -20,7 +18,6 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AddAppointmentActivity extends AppCompatActivity {
 
@@ -30,6 +27,9 @@ public class AddAppointmentActivity extends AppCompatActivity {
     private String selectedPatientId = null;
     private ApiService apiService;
     private List<Patient> searchResults = new ArrayList<>();
+
+    private boolean isEditMode = false;
+    private String editAppointmentId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,30 @@ public class AddAppointmentActivity extends AppCompatActivity {
         apiService = RetrofitClient.getApiService();
 
         setupPickers();
-
-        // Fetch data once when activity starts
         loadPatientsForDropdown();
+
+        // Check if we are editing an existing appointment
+        isEditMode = getIntent().getBooleanExtra("IS_EDIT", false);
+        if (isEditMode) {
+            topAppBar.setTitle("Edit Appointment");
+            btnSchedule.setText("Update Appointment");
+            editAppointmentId = getIntent().getStringExtra("APPT_ID");
+            selectedPatientId = getIntent().getStringExtra("PATIENT_ID");
+            searchPatientAuto.setText(getIntent().getStringExtra("PATIENT_NAME"));
+
+            String rawDateTime = getIntent().getStringExtra("DATETIME");
+            if (rawDateTime != null && rawDateTime.length() >= 10) {
+                editDate.setText(rawDateTime.substring(0, 10));
+                if (rawDateTime.length() > 10) {
+                    editTime.setText(rawDateTime.substring(11).trim());
+                }
+            }
+
+            String reason = getIntent().getStringExtra("REASON");
+            if (reason != null && !reason.equals("null")) {
+                editReason.setText(reason);
+            }
+        }
 
         btnSchedule.setOnClickListener(v -> saveAppointment());
     }
@@ -77,24 +98,19 @@ public class AddAppointmentActivity extends AppCompatActivity {
                             R.layout.item_dropdown, displayNames);
                     searchPatientAuto.setAdapter(adapter);
 
-                    // Handle clicks properly from the natively filtered list
                     searchPatientAuto.setOnItemClickListener((parent, view, position, id) -> {
                         String selectedText = (String) parent.getItemAtPosition(position);
                         for (Patient p : searchResults) {
                             if ((p.getName() + " (" + p.getMedicalId() + ")").equals(selectedText)) {
                                 selectedPatientId = p.getId();
-                                searchPatientAuto.setText(p.getName()); // Clean up text after clicking
+                                searchPatientAuto.setText(p.getName());
                                 break;
                             }
                         }
                     });
                 }
             }
-
-            @Override
-            public void onFailure(Call<PatientsListResponse> call, Throwable t) {
-                Toast.makeText(AddAppointmentActivity.this, "Failed to load patient list", Toast.LENGTH_SHORT).show();
-            }
+            @Override public void onFailure(Call<PatientsListResponse> call, Throwable t) {}
         });
     }
 
@@ -122,21 +138,39 @@ public class AddAppointmentActivity extends AppCompatActivity {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("patient_id", selectedPatientId);
-        map.put("doctor_id", 1); // Hardcoded doctor for now
         map.put("appointment_date", editDate.getText().toString() + " " + editTime.getText().toString());
         map.put("reason_for_visit", editReason.getText().toString());
-        map.put("status", "scheduled");
-        map.put("duration_minutes", 30);
 
-        apiService.createAppointment(map).enqueue(new Callback<AppointmentResponse>() {
-            @Override
-            public void onResponse(Call<AppointmentResponse> call, Response<AppointmentResponse> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(AddAppointmentActivity.this, "Appointment Scheduled!", Toast.LENGTH_SHORT).show();
-                    finish();
+        if (isEditMode) {
+            map.put("appointment_id", editAppointmentId);
+            apiService.updateAppointment(map).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(AddAppointmentActivity.this, "Appointment Updated!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(AddAppointmentActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-            @Override public void onFailure(Call<AppointmentResponse> call, Throwable t) {}
-        });
+                @Override public void onFailure(Call<Void> call, Throwable t) {}
+            });
+        } else {
+            // New Appointment logic
+            map.put("doctor_id", 1);
+            map.put("status", "scheduled");
+            map.put("duration_minutes", 30);
+
+            apiService.createAppointment(map).enqueue(new Callback<AppointmentResponse>() {
+                @Override
+                public void onResponse(Call<AppointmentResponse> call, Response<AppointmentResponse> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(AddAppointmentActivity.this, "Appointment Scheduled!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+                @Override public void onFailure(Call<AppointmentResponse> call, Throwable t) {}
+            });
+        }
     }
 }
