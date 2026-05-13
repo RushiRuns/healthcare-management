@@ -15,14 +15,18 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
     private List<Patient> patientListFiltered;
     private OnPatientClickListener listener;
 
+    private String currentSearchQuery = "";
+    private String currentStatusFilter = "Active";
+
     public interface OnPatientClickListener {
         void onPatientClick(Patient patient);
     }
 
     public PatientsAdapter(List<Patient> patientList, OnPatientClickListener listener) {
         this.patientList = patientList;
-        this.patientListFiltered = new ArrayList<>(patientList);
+        this.patientListFiltered = new ArrayList<>();
         this.listener = listener;
+        applyFilters();
     }
 
     @NonNull
@@ -50,15 +54,33 @@ public class PatientsAdapter extends RecyclerView.Adapter<PatientsAdapter.Patien
         return patientListFiltered.size();
     }
 
-    public void filter(String query) {
+    public void filterText(String query) {
+        this.currentSearchQuery = query.toLowerCase();
+        applyFilters();
+    }
+
+    public void filterStatus(String status) {
+        this.currentStatusFilter = status;
+        applyFilters();
+    }
+
+    private void applyFilters() {
         patientListFiltered.clear();
-        if (query.isEmpty()) {
-            patientListFiltered.addAll(patientList);
-        } else {
-            String lowerCaseQuery = query.toLowerCase();
-            for (Patient patient : patientList) {
-                if (patient.getName().toLowerCase().contains(lowerCaseQuery) ||
-                        patient.getMedicalId().toLowerCase().contains(lowerCaseQuery)) {
+        for (Patient patient : patientList) {
+            boolean matchesStatus = false;
+
+            if (currentStatusFilter.equals("Active") && patient.getIsActive() == 1) {
+                matchesStatus = true;
+            } else if (currentStatusFilter.equals("Inactive") && patient.getIsActive() == 0) {
+                matchesStatus = true;
+            } else if (currentStatusFilter.equals("All")) {
+                matchesStatus = true;
+            }
+
+            if (matchesStatus) {
+                if (currentSearchQuery.isEmpty() ||
+                        patient.getName().toLowerCase().contains(currentSearchQuery) ||
+                        patient.getMedicalId().toLowerCase().contains(currentSearchQuery)) {
                     patientListFiltered.add(patient);
                 }
             }

@@ -1,31 +1,31 @@
 package com.rushi.healthcare_app;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.converter.gson.GsonConverterFactory;
-import android.app.DatePickerDialog;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Random;
 
 public class AddPatientActivity extends AppCompatActivity {
 
     private AutoCompleteTextView searchPatientAuto;
-    private TextInputEditText editFirstName, editLastName, editDob, editGender, editPhone, editEmail;
+    private TextInputEditText editFirstName, editLastName, editDob, editPhone, editEmail;
+    private RadioGroup radioGroupGender;
     private MaterialButton btnSavePatient;
 
     private ApiService apiService;
@@ -46,10 +46,11 @@ public class AddPatientActivity extends AppCompatActivity {
         searchPatientAuto.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) searchPatientAuto.showDropDown();
         });
+
         editFirstName = findViewById(R.id.editFirstName);
         editLastName = findViewById(R.id.editLastName);
         editDob = findViewById(R.id.editDob);
-        editGender = findViewById(R.id.editGender);
+        radioGroupGender = findViewById(R.id.radioGroupGender);
         editPhone = findViewById(R.id.editPhone);
         editEmail = findViewById(R.id.editEmail);
         btnSavePatient = findViewById(R.id.btnSavePatient);
@@ -117,7 +118,13 @@ public class AddPatientActivity extends AppCompatActivity {
         editDob.setText(patient.getDob());
 
         // --- NEW AUTO-FILL FIELDS ---
-        if (patient.getGender() != null) editGender.setText(patient.getGender());
+        if (patient.getGender() != null) {
+            String g = patient.getGender().toUpperCase();
+            if (g.equals("M")) radioGroupGender.check(R.id.radioMale);
+            else if (g.equals("F")) radioGroupGender.check(R.id.radioFemale);
+            else radioGroupGender.check(R.id.radioOther);
+        }
+
         if (patient.getPhone() != null) editPhone.setText(patient.getPhone());
         if (patient.getEmail() != null) editEmail.setText(patient.getEmail());
 
@@ -129,7 +136,6 @@ public class AddPatientActivity extends AppCompatActivity {
         String lname = editLastName.getText().toString().trim();
         String dob = editDob.getText().toString().trim();
         String phone = editPhone.getText().toString().trim();
-        String genderInput = editGender.getText().toString().trim();
 
         if (fname.isEmpty() || lname.isEmpty() || dob.isEmpty() || phone.isEmpty()) {
             Toast.makeText(this, "Name, DOB, and Phone are required", Toast.LENGTH_LONG).show();
@@ -137,8 +143,12 @@ public class AddPatientActivity extends AppCompatActivity {
         }
 
         String gender = "Other";
-        if (genderInput.toLowerCase().startsWith("m")) gender = "M";
-        else if (genderInput.toLowerCase().startsWith("f")) gender = "F";
+        int selectedGenderId = radioGroupGender.getCheckedRadioButtonId();
+        if (selectedGenderId == R.id.radioMale) {
+            gender = "M";
+        } else if (selectedGenderId == R.id.radioFemale) {
+            gender = "F";
+        }
 
         String generatedMedicalId = "PT-" + System.currentTimeMillis();
 

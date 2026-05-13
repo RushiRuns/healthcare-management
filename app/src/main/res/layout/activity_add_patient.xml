@@ -147,29 +147,55 @@
                     android:fontFamily="sans-serif" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Gender (M/F)"
-                android:textColorHint="#64748B"
-                app:boxBackgroundColor="#FFFFFF"
-                app:boxStrokeColor="#E2E8F0"
-                app:boxStrokeWidth="1dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:hintTextColor="#185FA5">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editGender"
-                    android:layout_width="match_parent"
+                android:layout_marginStart="4dp"
+                android:text="Gender"
+                android:textSize="12sp"
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif-medium" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioMale"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"
+                    android:text="M"
                     android:textColor="#1A2535"
-                    android:fontFamily="sans-serif" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    app:buttonTint="#185FA5" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="F"
+                    android:textColor="#1A2535"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    app:buttonTint="#185FA5" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Other"
+                    android:textColor="#1A2535"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif"
+                    app:buttonTint="#185FA5" />
+            </RadioGroup>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"

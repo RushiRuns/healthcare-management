@@ -49,6 +49,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:padding="16dp">
 
                 <com.google.android.material.card.MaterialCardView
@@ -76,8 +77,9 @@
 
                         <EditText
                             android:id="@+id/editSearch"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:layout_marginStart="12dp"
                             android:background="@null"
                             android:hint="Search patients..."
@@ -88,6 +90,53 @@
                             android:textColorHint="#64748B" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+                <LinearLayout
+                    android:id="@+id/layoutFilterOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="16dp"
+                    android:paddingHorizontal="4dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/textFilterActive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active"
+                        android:textSize="14sp"
+                        android:textColor="#1A2535"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/bg_filter_selected" />
+
+                    <TextView
+                        android:id="@+id/textFilterInactive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Inactive"
+                        android:textSize="14sp"
+                        android:textColor="#64748B"
+                        android:fontFamily="sans-serif"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/bg_filter_unselected" />
+
+                    <TextView
+                        android:id="@+id/textFilterAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All"
+                        android:textSize="14sp"
+                        android:textColor="#64748B"
+                        android:fontFamily="sans-serif"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
+                        android:background="@drawable/bg_filter_unselected" />
+                </LinearLayout>
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
