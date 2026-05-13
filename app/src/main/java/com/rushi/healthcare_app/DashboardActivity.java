@@ -47,6 +47,16 @@ public class DashboardActivity extends AppCompatActivity {
             finish();
         });
 
+        binding.btnQuickAddPatient.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, AddPatientActivity.class);
+            startActivity(intent);
+        });
+
+        binding.btnQuickAddAppointment.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, AddAppointmentActivity.class);
+            startActivity(intent);
+        });
+
         binding.navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
