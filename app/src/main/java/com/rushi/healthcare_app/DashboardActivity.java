@@ -57,6 +57,12 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        binding.btnViewSchedule.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, AppointmentsActivity.class);
+            intent.putExtra("FILTER_TODAY", true);
+            startActivity(intent);
+        });
+
         binding.navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 

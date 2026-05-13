@@ -129,7 +129,15 @@ public class AppointmentsActivity extends AppCompatActivity {
         });
 
         // Setup Filtering UI
+        // Setup Filtering UI
         setupSearchAndFilters();
+
+        // Check for the "Today" flag and apply filter before fetching
+        if (getIntent().getBooleanExtra("FILTER_TODAY", false)) {
+            currentActiveFilter = "Today";
+            updateFilterUI(filterToday);
+            findViewById(R.id.filterLayout).setVisibility(android.view.View.VISIBLE);
+        }
 
         fetchAppointments();
 
