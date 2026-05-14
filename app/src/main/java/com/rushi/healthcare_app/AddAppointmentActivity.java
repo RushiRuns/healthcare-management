@@ -2,11 +2,15 @@ package com.rushi.healthcare_app;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -24,6 +28,8 @@ public class AddAppointmentActivity extends AppCompatActivity {
     private AutoCompleteTextView searchPatientAuto;
     private TextInputEditText editDate, editTime, editReason;
     private MaterialButton btnSchedule;
+    private SwitchCompat switchPayment;
+    private TextView textPaymentStatus;
     private String selectedPatientId = null;
     private ApiService apiService;
     private List<Patient> searchResults = new ArrayList<>();
@@ -46,17 +52,37 @@ public class AddAppointmentActivity extends AppCompatActivity {
         searchPatientAuto.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) searchPatientAuto.showDropDown();
         });
+
         editDate = findViewById(R.id.editDate);
         editTime = findViewById(R.id.editTime);
         editReason = findViewById(R.id.editReason);
         btnSchedule = findViewById(R.id.btnSchedule);
+        switchPayment = findViewById(R.id.switchPayment);
+        textPaymentStatus = findViewById(R.id.textPaymentStatus);
 
         apiService = RetrofitClient.getApiService();
 
         setupPickers();
         loadPatientsForDropdown();
 
-        // Check if we are editing an existing appointment
+        // Payment gatekeeper logic (Logic + Visual State)
+        btnSchedule.setEnabled(false);
+
+        switchPayment.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            btnSchedule.setEnabled(isChecked);
+            if (isChecked) {
+                textPaymentStatus.setText("Fee Collected");
+                textPaymentStatus.setTextColor(Color.parseColor("#1A2535"));
+                btnSchedule.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185FA5")));
+                btnSchedule.setTextColor(Color.WHITE);
+            } else {
+                textPaymentStatus.setText("Consultation Fee: Pending");
+                textPaymentStatus.setTextColor(Color.parseColor("#64748B"));
+                btnSchedule.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E2E8F0")));
+                btnSchedule.setTextColor(Color.parseColor("#94A3B8"));
+            }
+        });
+
         isEditMode = getIntent().getBooleanExtra("IS_EDIT", false);
         if (isEditMode) {
             topAppBar.setTitle("Edit Appointment");
@@ -141,6 +167,9 @@ public class AddAppointmentActivity extends AppCompatActivity {
         map.put("appointment_date", editDate.getText().toString() + " " + editTime.getText().toString());
         map.put("reason_for_visit", editReason.getText().toString());
 
+        map.put("payment_status", true);
+        map.put("transaction_id", "MANUAL_CASH");
+
         if (isEditMode) {
             map.put("appointment_id", editAppointmentId);
             apiService.updateAppointment(map).enqueue(new Callback<Void>() {
@@ -156,7 +185,6 @@ public class AddAppointmentActivity extends AppCompatActivity {
                 @Override public void onFailure(Call<Void> call, Throwable t) {}
             });
         } else {
-            // New Appointment logic
             map.put("doctor_id", 1);
             map.put("status", "scheduled");
             map.put("duration_minutes", 30);
