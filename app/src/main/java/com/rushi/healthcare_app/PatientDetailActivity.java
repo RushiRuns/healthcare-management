@@ -52,11 +52,17 @@ public class PatientDetailActivity extends AppCompatActivity {
         tvAllergies = findViewById(R.id.patientAllergies);
         btnToolbarEdit = findViewById(R.id.btnToolbarEdit);
         switchPatientStatus = findViewById(R.id.switchPatientStatus);
+        com.google.android.material.card.MaterialCardView btnGenerateReport = findViewById(R.id.btnGenerateReport);
 
         patientId = getIntent().getStringExtra("PATIENT_ID");
         if (patientId == null) patientId = "1";
 
         btnToolbarEdit.setOnClickListener(v -> showEditProfileBottomSheet());
+        btnGenerateReport.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(PatientDetailActivity.this, ReportPreviewActivity.class);
+            intent.putExtra("PATIENT_ID", patientId);
+            startActivity(intent);
+        });
 
         switchPatientStatus.setOnClickListener(v -> {
             if (currentPatient == null) return;

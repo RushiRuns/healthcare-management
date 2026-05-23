@@ -1,6 +1,7 @@
 package com.rushi.healthcare_app.models;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 public class LabRecord {
     @SerializedName("lab_result_id")
@@ -12,18 +13,6 @@ public class LabRecord {
     @SerializedName("test_date")
     public String test_date;
 
-    @SerializedName("result_value")
-    public String result_value;
-
-    @SerializedName("unit")
-    public String unit;
-
-    @SerializedName("reference_range")
-    public String reference_range;
-
-    @SerializedName("status")
-    public String status;
-
-    @SerializedName("notes")
-    public String notes;
+    @SerializedName("image_paths")
+    public List<String> image_paths;
 }

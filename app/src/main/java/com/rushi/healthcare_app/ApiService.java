@@ -83,17 +83,27 @@ public interface ApiService {
     @POST("vitals/delete.php")
     Call<Void> deleteVitals(@Body java.util.HashMap<String, String> data);
 
+// --- Corrected Labs Endpoints --- //
+
     @GET("labs/get.php")
     Call<com.rushi.healthcare_app.models.LabResponse> getLabs(@Query("patient_id") String patientId);
 
-    @POST("labs/add.php")
-    Call<Void> addLab(@Body java.util.HashMap<String, String> data);
+    @retrofit2.http.Multipart
+    @retrofit2.http.POST("labs/add.php")
+    retrofit2.Call<Void> addLab(
+            @retrofit2.http.Part("patient_id") okhttp3.RequestBody patientId,
+            @retrofit2.http.Part("test_name") okhttp3.RequestBody testName,
+            @retrofit2.http.Part("test_date") okhttp3.RequestBody testDate,
+            @retrofit2.http.Part java.util.List<okhttp3.MultipartBody.Part> images
+    );
 
     @POST("labs/update.php")
     Call<Void> updateLab(@Body java.util.HashMap<String, String> data);
 
     @POST("labs/delete.php")
     Call<Void> deleteLab(@Body java.util.HashMap<String, String> data);
+
+    // -------------------------------- //
 
     @GET("dashboard/stats.php")
     Call<DashboardStatsResponse> getDashboardStats();

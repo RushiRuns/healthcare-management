@@ -48,6 +48,11 @@
 
         <activity android:name=".AddAppointmentActivity"/>
 
+        <activity
+            android:name=".ReportPreviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Healthcare_app" />
+
     </application>
 
 </manifest>

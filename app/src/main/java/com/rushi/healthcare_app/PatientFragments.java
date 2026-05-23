@@ -813,6 +813,9 @@ public class PatientFragments {
         private String patientId;
         private RecyclerView recyclerView;
         private com.rushi.healthcare_app.adapters.LabsAdapter adapter;
+        private java.util.List<android.net.Uri> selectedImageUris = new java.util.ArrayList<>();
+        private android.widget.LinearLayout layoutImagePreviews;
+        private androidx.activity.result.ActivityResultLauncher<androidx.activity.result.PickVisualMediaRequest> pickMultipleMedia;
 
         public static LabsFragment newInstance(String patientId) {
             LabsFragment fragment = new LabsFragment();
@@ -828,6 +831,14 @@ public class PatientFragments {
             if (getArguments() != null) {
                 patientId = getArguments().getString("PATIENT_ID");
             }
+
+            pickMultipleMedia = registerForActivityResult(
+                    new androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia(), uris -> {
+                        if (!uris.isEmpty()) {
+                            selectedImageUris.addAll(uris);
+                            updateImagePreviews();
+                        }
+                    });
         }
 
         @Nullable
@@ -839,110 +850,118 @@ public class PatientFragments {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-
             recyclerView = view.findViewById(R.id.recyclerViewLabs);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(new com.rushi.healthcare_app.adapters.LabsAdapter(new java.util.ArrayList<>(), new com.rushi.healthcare_app.adapters.LabsAdapter.OnLabActionListener() {
+                @Override public void onDelete(com.rushi.healthcare_app.models.LabRecord record) {}
+                @Override public void onView(com.rushi.healthcare_app.models.LabRecord record) {}
+            }));
 
             com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton btnAddLab = view.findViewById(R.id.btnAddLab);
-            btnAddLab.setOnClickListener(v -> showAddLabBottomSheet(null));
+            btnAddLab.setOnClickListener(v -> showAddLabBottomSheet());
 
             fetchLabs();
         }
 
-        private void showAddLabBottomSheet(@Nullable com.rushi.healthcare_app.models.LabRecord existingRecord) {
+        private void showAddLabBottomSheet() {
+            selectedImageUris.clear();
             com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog =
                     new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.Theme_Healthcare_app_BottomSheetDialog);
 
-            View bottomSheetView = LayoutInflater.from(getContext())
-                    .inflate(R.layout.bottom_sheet_add_lab, null);
+            View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_add_lab, null);
             bottomSheetDialog.setContentView(bottomSheetView);
 
-            android.widget.TextView sheetTitle = bottomSheetView.findViewById(R.id.textLabSheetTitle);
             android.widget.EditText inputName = bottomSheetView.findViewById(R.id.inputTestName);
             android.widget.EditText inputDate = bottomSheetView.findViewById(R.id.inputTestDate);
-            android.widget.EditText inputResult = bottomSheetView.findViewById(R.id.inputResultValue);
-            android.widget.EditText inputUnit = bottomSheetView.findViewById(R.id.inputUnit);
-            android.widget.EditText inputRange = bottomSheetView.findViewById(R.id.inputReferenceRange);
-            android.widget.RadioGroup radioGroup = bottomSheetView.findViewById(R.id.radioGroupLabStatus);
+            android.widget.Button btnAddImages = bottomSheetView.findViewById(R.id.btnAddImages);
             android.widget.Button btnSave = bottomSheetView.findViewById(R.id.btnSaveLab);
-
-            if (existingRecord != null) {
-                sheetTitle.setText("Update Lab Result");
-                inputName.setText(existingRecord.test_name);
-                inputDate.setText(existingRecord.test_date);
-                inputResult.setText(existingRecord.result_value);
-                inputUnit.setText(existingRecord.unit);
-                inputRange.setText(existingRecord.reference_range);
-
-                if ("abnormal".equalsIgnoreCase(existingRecord.status)) {
-                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioAbnormal)).setChecked(true);
-                } else if ("critical".equalsIgnoreCase(existingRecord.status)) {
-                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioCritical)).setChecked(true);
-                } else {
-                    ((android.widget.RadioButton)bottomSheetView.findViewById(R.id.radioNormal)).setChecked(true);
-                }
-                btnSave.setText("Update Result");
-            }
+            layoutImagePreviews = bottomSheetView.findViewById(R.id.layoutImagePreviews);
 
             inputDate.setOnClickListener(v -> {
                 java.util.Calendar calendar = java.util.Calendar.getInstance();
-                new android.app.DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                // FIX: Force the DatePickerDialog to use the Light Theme so text is visible
+                new android.app.DatePickerDialog(getContext(), android.R.style.Theme_DeviceDefault_Light_Dialog, (view1, year, month, dayOfMonth) -> {
                     String selectedDate = String.format(java.util.Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                     inputDate.setText(selectedDate);
                 }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
             });
 
+            btnAddImages.setOnClickListener(v -> pickMultipleMedia.launch(new androidx.activity.result.PickVisualMediaRequest.Builder()
+                    .setMediaType(androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                    .build()));
+
             btnSave.setOnClickListener(v -> {
                 String name = inputName.getText().toString().trim();
                 String date = inputDate.getText().toString().trim();
-                String result = inputResult.getText().toString().trim();
-                String unit = inputUnit.getText().toString().trim();
-                String range = inputRange.getText().toString().trim();
-
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-                android.widget.RadioButton selectedRadio = bottomSheetView.findViewById(selectedId);
-                String status = selectedRadio.getText().toString().toLowerCase();
 
                 if (name.isEmpty() || date.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill in Test Name and Date", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                if (existingRecord == null) {
-                    saveLabToDatabase(null, name, date, result, unit, range, status, bottomSheetDialog);
-                } else {
-                    saveLabToDatabase(existingRecord.lab_result_id, name, date, result, unit, range, status, bottomSheetDialog);
-                }
+                saveLabToDatabase(name, date, bottomSheetDialog);
             });
 
             bottomSheetDialog.show();
         }
 
-        private void saveLabToDatabase(@Nullable String labId, String name, String date, String result, String unit, String range, String status, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
-            java.util.HashMap<String, String> data = new java.util.HashMap<>();
-            data.put("patient_id", patientId);
-            data.put("test_name", name);
-            data.put("test_date", date);
-            data.put("result_value", result);
-            data.put("unit", unit);
-            data.put("reference_range", range);
-            data.put("status", status);
+        private void updateImagePreviews() {
+            if (layoutImagePreviews == null || getContext() == null) return;
+            layoutImagePreviews.removeAllViews();
+            for (android.net.Uri uri : selectedImageUris) {
+                android.widget.ImageView imageView = new android.widget.ImageView(getContext());
+                android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(150, 150);
+                params.setMarginEnd(16);
+                imageView.setLayoutParams(params);
+                imageView.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+                imageView.setImageURI(uri);
+                layoutImagePreviews.addView(imageView);
+            }
+        }
 
-            ApiService apiService = RetrofitClient.getApiService();
-            Call<Void> call;
+        private void saveLabToDatabase(String name, String date, com.google.android.material.bottomsheet.BottomSheetDialog dialog) {
+            // FIX: Show a loading dialog so the user knows it's processing
+            android.app.ProgressDialog progressDialog = new android.app.ProgressDialog(getContext());
+            progressDialog.setMessage("Saving Lab Result...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
 
-            if (labId == null) {
-                call = apiService.addLab(data);
-            } else {
-                data.put("lab_result_id", labId);
-                call = apiService.updateLab(data);
+            okhttp3.RequestBody pIdPart = okhttp3.RequestBody.create(okhttp3.MediaType.parse("text/plain"), patientId);
+            okhttp3.RequestBody namePart = okhttp3.RequestBody.create(okhttp3.MediaType.parse("text/plain"), name);
+            okhttp3.RequestBody datePart = okhttp3.RequestBody.create(okhttp3.MediaType.parse("text/plain"), date);
+
+            java.util.List<okhttp3.MultipartBody.Part> imageParts = new java.util.ArrayList<>();
+
+            for (int i = 0; i < selectedImageUris.size(); i++) {
+                try {
+                    // FIX: Image Compression Algorithm to speed up upload times massively
+                    android.graphics.Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUris.get(i));
+                    int maxDim = 1024;
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    if (width > maxDim || height > maxDim) {
+                        float ratio = Math.min((float) maxDim / width, (float) maxDim / height);
+                        bitmap = android.graphics.Bitmap.createScaledBitmap(bitmap, Math.round(ratio * width), Math.round(ratio * height), true);
+                    }
+
+                    java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 75, stream);
+                    byte[] bytes = stream.toByteArray();
+
+                    okhttp3.RequestBody requestFile = okhttp3.RequestBody.create(okhttp3.MediaType.parse("image/jpeg"), bytes);
+                    okhttp3.MultipartBody.Part body = okhttp3.MultipartBody.Part.createFormData("images[]", "image_" + i + ".jpg", requestFile);
+                    imageParts.add(body);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
-            call.enqueue(new Callback<Void>() {
+            RetrofitClient.getApiService().addLab(pIdPart, namePart, datePart, imageParts).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
+                    progressDialog.dismiss();
                     if (response.isSuccessful()) {
-                        Toast.makeText(getContext(), labId == null ? "Lab saved" : "Lab updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Lab saved", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         fetchLabs();
                     } else {
@@ -951,29 +970,57 @@ public class PatientFragments {
                 }
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
+                    progressDialog.dismiss();
                     Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
+        private void showImagesDialog(com.rushi.healthcare_app.models.LabRecord record) {
+            if (record.image_paths == null || record.image_paths.isEmpty()) {
+                Toast.makeText(getContext(), "No images to display", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            android.app.Dialog dialog = new android.app.Dialog(getContext());
+            dialog.setContentView(R.layout.dialog_view_images);
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            android.widget.LinearLayout layoutImages = dialog.findViewById(R.id.layoutImagesContainer);
+            String baseUrl = "http://10.211.47.241/healthcare-backend/";
+
+            for (String path : record.image_paths) {
+                android.widget.ImageView imageView = new android.widget.ImageView(getContext());
+                android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, 800);
+                params.setMargins(0, 0, 0, 32);
+                imageView.setLayoutParams(params);
+                imageView.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
+
+                com.bumptech.glide.Glide.with(this)
+                        .load(baseUrl + path)
+                        .into(imageView);
+
+                layoutImages.addView(imageView);
+            }
+
+            dialog.show();
+        }
+
         private void deleteLabFromDatabase(String labId) {
             java.util.HashMap<String, String> data = new java.util.HashMap<>();
             data.put("lab_result_id", labId);
-
             RetrofitClient.getApiService().deleteLab(data).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Lab deleted", Toast.LENGTH_SHORT).show();
                         fetchLabs();
-                    } else {
-                        Toast.makeText(getContext(), "Failed to delete", Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+                public void onFailure(Call<Void> call, Throwable t) {}
             });
         }
 
@@ -984,11 +1031,6 @@ public class PatientFragments {
                     if (response.isSuccessful() && response.body() != null && response.body().records != null) {
                         adapter = new com.rushi.healthcare_app.adapters.LabsAdapter(response.body().records, new com.rushi.healthcare_app.adapters.LabsAdapter.OnLabActionListener() {
                             @Override
-                            public void onEdit(com.rushi.healthcare_app.models.LabRecord record) {
-                                showAddLabBottomSheet(record);
-                            }
-
-                            @Override
                             public void onDelete(com.rushi.healthcare_app.models.LabRecord record) {
                                 new android.app.AlertDialog.Builder(getContext())
                                         .setTitle("Delete Lab Result")
@@ -997,14 +1039,17 @@ public class PatientFragments {
                                         .setNegativeButton("Cancel", null)
                                         .show();
                             }
+
+                            @Override
+                            public void onView(com.rushi.healthcare_app.models.LabRecord record) {
+                                showImagesDialog(record);
+                            }
                         });
                         recyclerView.setAdapter(adapter);
                     }
                 }
                 @Override
-                public void onFailure(Call<com.rushi.healthcare_app.models.LabResponse> call, Throwable t) {
-                    Log.e("LabsFragment", "Fetch Error", t);
-                }
+                public void onFailure(Call<com.rushi.healthcare_app.models.LabResponse> call, Throwable t) {}
             });
         }
     }
