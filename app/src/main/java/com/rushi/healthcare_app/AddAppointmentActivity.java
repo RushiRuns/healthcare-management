@@ -42,6 +42,12 @@ public class AddAppointmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_appointment);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
         MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
         topAppBar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
         topAppBar.setNavigationOnClickListener(v -> finish());
@@ -170,12 +176,17 @@ public class AddAppointmentActivity extends AppCompatActivity {
         map.put("payment_status", true);
         map.put("transaction_id", "MANUAL_CASH");
 
+        String patientName = searchPatientAuto.getText().toString();
+        String dateStr = editDate.getText().toString();
+        String timeStr = editTime.getText().toString();
+
         if (isEditMode) {
             map.put("appointment_id", editAppointmentId);
             apiService.updateAppointment(map).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
+                        scheduleNotification(dateStr, timeStr, patientName);
                         Toast.makeText(AddAppointmentActivity.this, "Appointment Updated!", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
@@ -193,12 +204,48 @@ public class AddAppointmentActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<AppointmentResponse> call, Response<AppointmentResponse> response) {
                     if (response.isSuccessful()) {
+                        scheduleNotification(dateStr, timeStr, patientName);
                         Toast.makeText(AddAppointmentActivity.this, "Appointment Scheduled!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
                 @Override public void onFailure(Call<AppointmentResponse> call, Throwable t) {}
             });
+        }
+    }
+
+    private void scheduleNotification(String date, String time, String patientName) {
+        try {
+            // KEEPING THE 10-SECOND TEST ACTIVE
+            long triggerTime = System.currentTimeMillis() + 10000;
+
+            android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
+            android.content.Intent intent = new android.content.Intent(this, NotificationReceiver.class);
+            intent.putExtra("patient_name", patientName);
+            intent.putExtra("time", time);
+
+            android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
+                    this,
+                    (int) System.currentTimeMillis(),
+                    intent,
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+            );
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                } else {
+                    // FALLBACK: If exact alarms are denied by Android, force a standard alarm
+                    alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                }
+            } else {
+                alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+            }
+
+            android.widget.Toast.makeText(this, "Alarm set for 10 seconds from now", android.widget.Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -988,7 +988,7 @@ public class PatientFragments {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             android.widget.LinearLayout layoutImages = dialog.findViewById(R.id.layoutImagesContainer);
-            String baseUrl = "http://10.211.47.241/healthcare-backend/";
+            String baseUrl = RetrofitClient.IMAGE_BASE_URL;
 
             for (String path : record.image_paths) {
                 android.widget.ImageView imageView = new android.widget.ImageView(getContext());
