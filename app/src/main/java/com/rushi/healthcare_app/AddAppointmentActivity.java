@@ -216,34 +216,39 @@ public class AddAppointmentActivity extends AppCompatActivity {
 
     private void scheduleNotification(String date, String time, String patientName) {
         try {
-            // KEEPING THE 10-SECOND TEST ACTIVE
-            long triggerTime = System.currentTimeMillis() + 10000;
+            String dateTimeStr = date + " " + time;
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US);
+            java.util.Date appointmentDate = sdf.parse(dateTimeStr);
 
-            android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
-            android.content.Intent intent = new android.content.Intent(this, NotificationReceiver.class);
-            intent.putExtra("patient_name", patientName);
-            intent.putExtra("time", time);
+            if (appointmentDate != null) {
+                long triggerTime = appointmentDate.getTime() - (30 * 60 * 1000);
 
-            android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
-                    this,
-                    (int) System.currentTimeMillis(),
-                    intent,
-                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
-            );
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-                } else {
-                    // FALLBACK: If exact alarms are denied by Android, force a standard alarm
-                    alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                if (triggerTime <= System.currentTimeMillis()) {
+                    triggerTime = System.currentTimeMillis() + 5000;
                 }
-            } else {
-                alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+
+                android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
+                android.content.Intent intent = new android.content.Intent(this, NotificationReceiver.class);
+                intent.putExtra("patient_name", patientName);
+                intent.putExtra("time", time);
+
+                android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
+                        this,
+                        (int) System.currentTimeMillis(),
+                        intent,
+                        android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+                );
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                    } else {
+                        alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                    }
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                }
             }
-
-            android.widget.Toast.makeText(this, "Alarm set for 10 seconds from now", android.widget.Toast.LENGTH_SHORT).show();
-
         } catch (Exception e) {
             e.printStackTrace();
         }

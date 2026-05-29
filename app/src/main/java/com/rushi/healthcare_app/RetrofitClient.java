@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     // CHANGE YOUR IP ADDRESS ONLY HERE
-    public static final String IP_ADDRESS = "192.168.1.14";
+    public static final String IP_ADDRESS = "192.168.1.15";
 
     public static final String BASE_URL = "http://" + IP_ADDRESS + "/healthcare-backend/api/";
     public static final String IMAGE_BASE_URL = "http://" + IP_ADDRESS + "/healthcare-backend/";
