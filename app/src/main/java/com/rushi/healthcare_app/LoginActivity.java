@@ -23,7 +23,8 @@ public class LoginActivity extends AppCompatActivity {
             String password = binding.etPassword.getText().toString();
 
             if (email.equals("admin") && password.equals("admin123")) {
-                Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                // Route to Personalization after Login
+                Intent intent = new Intent(LoginActivity.this, PersonalizationActivity.class);
                 startActivity(intent);
                 finish();
             } else {

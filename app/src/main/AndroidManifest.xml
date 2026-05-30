@@ -19,7 +19,7 @@
         android:theme="@style/Theme.Healthcare_app" >
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Healthcare_app" >
             <intent-filter>
@@ -27,6 +27,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Healthcare_app" />
+
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PersonalizationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar" />
 
         <activity android:name=".DashboardActivity" android:exported="false" />
         <activity android:name=".AppointmentsActivity" android:exported="false" />
