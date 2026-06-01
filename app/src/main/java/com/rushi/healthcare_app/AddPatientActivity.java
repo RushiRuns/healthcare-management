@@ -41,11 +41,7 @@ public class AddPatientActivity extends AppCompatActivity {
         topAppBar.setNavigationOnClickListener(v -> finish());
 
         searchPatientAuto = findViewById(R.id.searchPatientAuto);
-        searchPatientAuto.setThreshold(0);
-        searchPatientAuto.setOnClickListener(v -> searchPatientAuto.showDropDown());
-        searchPatientAuto.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) searchPatientAuto.showDropDown();
-        });
+        searchPatientAuto.setThreshold(1);
 
         editFirstName = findViewById(R.id.editFirstName);
         editLastName = findViewById(R.id.editLastName);

@@ -57,6 +57,7 @@ public class PatientsActivity extends AppCompatActivity {
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, topAppBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
+        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(android.R.color.white));
         toggle.syncState();
 
         View sidebar = (View) navigationView.getParent();
@@ -140,10 +141,8 @@ public class PatientsActivity extends AppCompatActivity {
         btnToolbarFilter.setOnClickListener(v -> {
             if (layoutFilterOptions.getVisibility() == View.VISIBLE) {
                 layoutFilterOptions.setVisibility(View.GONE);
-                btnToolbarFilter.setColorFilter(Color.parseColor("#64748B"));
             } else {
                 layoutFilterOptions.setVisibility(View.VISIBLE);
-                btnToolbarFilter.setColorFilter(Color.parseColor("#1A2535"));
             }
         });
 

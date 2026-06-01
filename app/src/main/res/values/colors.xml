@@ -11,6 +11,8 @@
     <color name="status_wait_text">#705000</color>
     <color name="status_cancel_bg">#FFDAD6</color>
     <color name="status_cancel_text">#93000A</color>
+    <color name="status_scheduled_bg">#DBEAFE</color>
+    <color name="status_scheduled_text">#1D4ED8</color>
     <color name="app_background">#FAFAFF</color>
     <color name="card_stroke">#E0E0E0</color>
     <color name="text_primary">#1D1B20</color>

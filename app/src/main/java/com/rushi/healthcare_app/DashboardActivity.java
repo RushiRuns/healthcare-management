@@ -1,12 +1,14 @@
 package com.rushi.healthcare_app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import com.rushi.healthcare_app.databinding.ActivityDashboardBinding;
+import java.util.Calendar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +33,7 @@ public class DashboardActivity extends AppCompatActivity {
                 this, binding.drawerLayout, binding.toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         binding.drawerLayout.addDrawerListener(toggle);
+        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(android.R.color.white));
         toggle.syncState();
 
         // Set sidebar width to 70% of screen width
@@ -90,14 +93,49 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+        updateGreetingAndName();
         fetchDashboardStats();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresh the stats when the user comes back to the dashboard
+        updateGreetingAndName();
         fetchDashboardStats();
+    }
+
+    private void updateGreetingAndName() {
+        // Handle Time-based Greeting
+        Calendar calendar = Calendar.getInstance();
+        int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+
+        String greeting;
+        if (timeOfDay >= 0 && timeOfDay < 12) {
+            greeting = "Good Morning,";
+        } else if (timeOfDay >= 12 && timeOfDay < 16) {
+            greeting = "Good Afternoon,";
+        } else if (timeOfDay >= 16 && timeOfDay < 21) {
+            greeting = "Good Evening,";
+        } else {
+            greeting = "Good Night,";
+        }
+        binding.tvGreetingTime.setText(greeting);
+
+        // Handle Personalized Doctor Name (Fixed Keys)
+        SharedPreferences prefs = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        String firstName = prefs.getString("user_first_name", "");
+        String lastName = prefs.getString("user_last_name", "");
+        String qualifications = prefs.getString("user_qualifications", "");
+
+        if (firstName.isEmpty() && lastName.isEmpty()) {
+            binding.tvDoctorName.setText("Doctor");
+        } else {
+            String fullName = "Dr. " + firstName + " " + lastName;
+            if (!qualifications.isEmpty()) {
+                fullName += ", " + qualifications;
+            }
+            binding.tvDoctorName.setText(fullName);
+        }
     }
 
     private void fetchDashboardStats() {

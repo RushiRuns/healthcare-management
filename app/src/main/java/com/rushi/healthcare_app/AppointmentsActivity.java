@@ -65,6 +65,7 @@ public class AppointmentsActivity extends AppCompatActivity {
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, topAppBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
+        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(android.R.color.white));
         toggle.syncState();
 
         android.view.View sidebar = (android.view.View) navigationView.getParent();
@@ -216,15 +217,15 @@ public class AppointmentsActivity extends AppCompatActivity {
         filterMonth.setOnClickListener(v -> { currentActiveFilter = "This Month"; updateFilterUI(filterMonth); applyFilters(); });
     }
 
-    private void updateFilterUI(TextView activeTextView) {
-        TextView[] filters = {filterAll, filterToday, filterWeek, filterMonth};
-        for (TextView tv : filters) {
-            if (tv == activeTextView) {
-                tv.setTextColor(Color.parseColor("#FFFFFF"));
-                tv.setBackgroundResource(R.drawable.bg_filter_selected);
+    private void updateFilterUI(TextView selected) {
+        TextView[] allFilters = {filterAll, filterToday, filterWeek, filterMonth};
+        for (TextView filter : allFilters) {
+            if (filter == selected) {
+                filter.setBackgroundResource(R.drawable.bg_filter_selected);
+                filter.setTextColor(android.graphics.Color.parseColor("#FFFFFF")); // White text for selected
             } else {
-                tv.setTextColor(Color.parseColor("#1A2535"));
-                tv.setBackgroundResource(R.drawable.bg_filter_unselected);
+                filter.setBackgroundResource(R.drawable.bg_filter_unselected);
+                filter.setTextColor(android.graphics.Color.parseColor("#1A2535")); // Dark text for unselected
             }
         }
     }

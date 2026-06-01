@@ -64,6 +64,10 @@ public class AppointmentsAdapter extends RecyclerView.Adapter<AppointmentsAdapte
                 bgColor = R.color.status_cancel_bg;
                 textColor = R.color.status_cancel_text;
                 break;
+            case "scheduled":
+                bgColor = R.color.status_scheduled_bg;
+                textColor = R.color.status_scheduled_text;
+                break;
             default:
                 bgColor = R.color.status_wait_bg;
                 textColor = R.color.status_wait_text;

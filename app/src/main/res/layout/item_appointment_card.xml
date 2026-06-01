@@ -16,49 +16,63 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
         android:background="?attr/selectableItemBackground">
 
-        <!-- Left side: Time + Patient name -->
+        <!-- Vertical accent line -->
+        <View
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="#02A4D3" />
+
+        <!-- Card content -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/textTime"
+            <!-- Left side: Time + Patient name -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#1A2535"
+                    android:fontFamily="sans-serif-medium"
+                    tools:text="09:00 AM" />
+
+                <TextView
+                    android:id="@+id/textPatientName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="13sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif"
+                    tools:text="John Doe" />
+
+            </LinearLayout>
+
+            <!-- Status chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:textColor="#1A2535"
+                android:text="Wait"
+                android:textSize="11sp"
                 android:fontFamily="sans-serif-medium"
-                tools:text="09:00 AM" />
-
-            <TextView
-                android:id="@+id/textPatientName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textSize="13sp"
-                android:textColor="#64748B"
-                android:fontFamily="sans-serif"
-                tools:text="John Doe" />
+                app:chipCornerRadius="20dp"
+                app:chipStrokeWidth="0dp"
+                app:ensureMinTouchTargetSize="false" />
 
         </LinearLayout>
-
-        <!-- Status chip -->
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Wait"
-            android:textSize="11sp"
-            android:fontFamily="sans-serif-medium"
-            app:chipCornerRadius="20dp"
-            app:chipStrokeWidth="0dp"
-            app:ensureMinTouchTargetSize="false" />
 
     </LinearLayout>
 
